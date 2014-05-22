@@ -9,8 +9,8 @@ WARNING: Things may change without notice.
 
 Branches:
 
-  main - The experimental development branch
-  
-  master - The default development branch
-  
-  master-clean - The branch without any changes
+main - The experimental development branch
+
+master - The default development branch
+
+master-clean - The branch without any changes
