@@ -353,6 +353,24 @@ case "${host_os}" in
 	esac
         ;;
 
+     *gnu*)
+	AC_MSG_RESULT([ok (${host_os})])
+	VGCONF_OS="gnu"
+	AC_DEFINE([GNU_0_5], 000500, [GNU_KERN version value for GNU 0.5])
+
+        # Hm, this is gnu. Check the kernel version
+	AC_MSG_CHECKING([for the kernel version])
+
+	kernel= `uname -r`
+
+	case "${kernel}" in
+	     0.5)
+		  AC_MSG_RESULT([gnu (${kernel})])
+		  AC_DEFINE([GNU_KERN)], GNU_0_5, [Define GNU_KERN as 000500 if you're using GNU 0.5])
+		  ;;
+	esac
+        ;;
+
      *) 
 	AC_MSG_RESULT([no (${host_os})])
 	AC_MSG_ERROR([Valgrind is operating system specific. Sorry.])
