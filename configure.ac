@@ -619,7 +619,7 @@ case "$ARCH_MAX-$VGCONF_OS" in
 		valt_load_address_pri_norml="0x38000000"
 		valt_load_address_pri_inner="0x28000000"
 		valt_load_address_sec_norml="0xUNSET"
-		valt_load_address_sec_inner-"0xUNSET"
+		valt_load_address_sec_inner="0xUNSET"
 		AC_MSG_RESULT([ok (${ARCH_MAX}-${VGCONF_OS})])
 		;;
     *)
