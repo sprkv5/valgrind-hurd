@@ -361,7 +361,7 @@ case "${host_os}" in
         # Hm, this is gnu. Check the kernel version
 	AC_MSG_CHECKING([for the kernel version])
 
-	kernel= `uname -r`
+	kernel=`uname -r`
 
 	case "${kernel}" in
 	     0.5)
