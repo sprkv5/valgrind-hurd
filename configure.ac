@@ -610,6 +610,18 @@ case "$ARCH_MAX-$VGCONF_OS" in
         valt_load_address_sec_inner="0xUNSET"
         AC_MSG_RESULT([ok (${ARCH_MAX}-${VGCONF_OS})])
         ;;
+	 # x86-GNU CPU/OS combination; amd64-GNU can be added later.
+	 x86-gnu)
+		VGCONF_ARCH_PRI="x86"
+		VGCONF_ARCH_SEC=""
+	VGCONF_PLATFORM_PRI_CAPS="X86_GNU"
+	VGCONF_PLATFORM_SEC_CAPS=""
+		valt_load_address_pri_norml="0x38000000"
+		valt_load_address_pri_inner="0x28000000"
+		valt_load_address_sec_norml="0xUNSET"
+		valt_load_address_sec_inner-"0xUNSET"
+		AC_MSG_RESULT([ok (${ARCH_MAX}-${VGCONF_OS})])
+		;;
     *)
         VGCONF_ARCH_PRI="unknown"
         VGCONF_ARCH_SEC="unknown"
