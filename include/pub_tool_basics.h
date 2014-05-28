@@ -115,7 +115,7 @@ typedef  Word                 PtrdiffT;   // 32             64
 typedef Word                   OffT;      // 32             64
 #elif defined(VGO_darwin)
 typedef Long                   OffT;      // 64             64
-#elif VGO_defined(VGO_gnu)
+#elif defined(VGO_gnu)
 typedef Word                   OffT;      // 32             64
 #else
 #  error Unknown OS
@@ -268,10 +268,7 @@ static inline Bool sr_isError ( SysRes sr ){
 static inline UWord sr_Res ( SysRes sr ){
    return sr._isError ? 0 : sr._val;
 }
-static inline UWord sr_ResEx ( SysRes sr ){
-   return sr._isError ? 0 : sr._valEx;
-}
-static inline Uword sr_ResHI ( SysRes sr ){
+static inline UWord sr_ResHI ( SysRes sr ){
    return 0;
 }
 static inline UWord sr_Err ( SysRes sr ){
