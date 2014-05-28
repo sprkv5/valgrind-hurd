@@ -79,6 +79,10 @@ typedef Int ArenaId;
       defined(VGP_x86_darwin)   || \
       defined(VGP_amd64_darwin)
 #  define VG_MIN_MALLOC_SZB       16
+// As GNU uses the same malloc as that of linux,
+// the minimum payload size is set similarly.
+#elif defined(VGP_x86_gnu)
+#  define VG_MIN_MALLOC_SZB        8
 #else
 #  error Unknown platform
 #endif

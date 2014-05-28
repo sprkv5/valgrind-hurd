@@ -98,6 +98,12 @@
 #  define VG_CLREQ_SZB             20
 #  define VG_STACK_REDZONE_SZB      0
 
+#elif defined(VGP_x86_gnu)
+#  define VG_MIN_INSTR_SZB          1  // assuming things for gnu to
+#  define VG_MAX_INSTR_SZB         16  // be similar as linux ones
+#  define VG_CLREQ_SZB             14
+#  define VG_STACK_REDZONE_SZB      0
+
 #else
 #  error Unknown platform
 #endif
