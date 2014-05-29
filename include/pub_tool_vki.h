@@ -50,6 +50,8 @@
 #  include "vki/vki-linux-drm.h"
 #elif defined(VGO_darwin)
 #  include "vki/vki-darwin.h"
+#elif defined(VGO_gnu)
+#  include "vki/vki-gnu.h"
 #else
 #  error Unknown Plat/OS
 #endif
