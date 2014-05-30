@@ -51,8 +51,7 @@
 #elif defined(VGO_darwin)
 #  include "vki/vki-darwin.h"
 #elif defined(VGO_gnu)
-   vg_assert(0);
-//#  include "vki/vki-gnu.h"
+#  include "vki/vki-gnu.h"
 #else
 #  error Unknown Plat/OS
 #endif

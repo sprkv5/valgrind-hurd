@@ -99,6 +99,9 @@ Bool VG_(resolve_filename) ( Int fd, HChar* buf, Int n_buf )
    }
    return False;
 
+#  elif defined(VGO_gnu) 
+   vg_assert(0);
+
 #  else
 #     error Unknown OS
 #  endif
@@ -109,6 +112,8 @@ SysRes VG_(mknod) ( const HChar* pathname, Int mode, UWord dev )
 #  if defined(VGO_linux) || defined(VGO_darwin)
    SysRes res = VG_(do_syscall3)(__NR_mknod,
                                  (UWord)pathname, mode, dev);
+#  elif defined(VGO_gnu) 
+   vg_assert(0);
 #  else
 #    error Unknown OS
 #  endif
@@ -123,6 +128,8 @@ SysRes VG_(open) ( const HChar* pathname, Int flags, Int mode )
 #  elif defined(VGO_darwin)
    SysRes res = VG_(do_syscall3)(__NR_open_nocancel,
                                  (UWord)pathname, flags, mode);
+#  elif defined(VGO_gnu) 
+   vg_assert(0);
 #  else
 #    error Unknown OS
 #  endif
@@ -146,6 +153,9 @@ void VG_(close) ( Int fd )
    (void)VG_(do_syscall1)(__NR_close, fd);
 #  elif defined(VGO_darwin)
    (void)VG_(do_syscall1)(__NR_close_nocancel, fd);
+#  elif defined(VGO_gnu) 
+   vg_assert(0);
+
 #  else
 #    error Unknown OS
 #  endif
@@ -158,6 +168,8 @@ Int VG_(read) ( Int fd, void* buf, Int count)
    SysRes res = VG_(do_syscall3)(__NR_read, fd, (UWord)buf, count);
 #  elif defined(VGO_darwin)
    SysRes res = VG_(do_syscall3)(__NR_read_nocancel, fd, (UWord)buf, count);
+#  elif defined(VGO_gnu) 
+   vg_assert(0);
 #  else
 #    error Unknown OS
 #  endif
@@ -178,6 +190,8 @@ Int VG_(write) ( Int fd, const void* buf, Int count)
    SysRes res = VG_(do_syscall3)(__NR_write, fd, (UWord)buf, count);
 #  elif defined(VGO_darwin)
    SysRes res = VG_(do_syscall3)(__NR_write_nocancel, fd, (UWord)buf, count);
+#  elif defined(VGO_gnu) 
+   vg_assert(0);
 #  else
 #    error "Unknown OS"
 #  endif
@@ -215,6 +229,8 @@ Int VG_(pipe) ( Int fd[2] )
       fd[1] = (Int)sr_ResHI(res);
    }
    return sr_isError(res) ? -1 : 0;
+#  elif defined(VGO_gnu) 
+   vg_assert(0);
 #  else
 #    error "Unknown OS"
 #  endif
@@ -238,6 +254,8 @@ Off64T VG_(lseek) ( Int fd, Off64T offset, Int whence )
    SysRes res = VG_(do_syscall4)(__NR_lseek, fd, 
                                  offset & 0xffffffff, offset >> 32, whence);
    return sr_isError(res) ? (-1) : sr_Res(res);
+#  elif defined(VGO_gnu) 
+   vg_assert(0);
 #  else
 #    error "Unknown plat"
 #  endif
@@ -295,7 +313,8 @@ SysRes VG_(stat) ( const HChar* file_name, struct vg_stat* vgbuf )
         TRANSLATE_TO_vg_stat(vgbuf, &buf);
      return res;
    }
-
+#  elif defined(VGO_gnu) 
+   vg_assert(0);
 #  else
 #    error Unknown OS
 #  endif
@@ -326,7 +345,8 @@ Int VG_(fstat) ( Int fd, struct vg_stat* vgbuf )
         TRANSLATE_TO_vg_stat(vgbuf, &buf);
      return sr_isError(res) ? (-1) : 0;
    }
-
+#  elif defined(VGO_gnu) 
+   vg_assert(0);
 #  else
 #    error Unknown OS
 #  endif
@@ -359,6 +379,8 @@ SysRes VG_(dup2) ( Int oldfd, Int newfd )
 {
 #  if defined(VGO_linux) || defined(VGO_darwin)
    return VG_(do_syscall2)(__NR_dup2, oldfd, newfd);
+#  elif defined(VGO_gnu) 
+   vg_assert(0);
 #  else
 #    error Unknown OS
 #  endif
@@ -371,6 +393,8 @@ Int VG_(fcntl) ( Int fd, Int cmd, Addr arg )
    SysRes res = VG_(do_syscall3)(__NR_fcntl, fd, cmd, arg);
 #  elif defined(VGO_darwin)
    SysRes res = VG_(do_syscall3)(__NR_fcntl_nocancel, fd, cmd, arg);
+#  elif defined(VGO_gnu) 
+   vg_assert(0);
 #  else
 #    error "Unknown OS"
 #  endif
@@ -439,6 +463,8 @@ Bool VG_(record_startup_wd) ( void )
      startup_wd_acquired = True;
      return True;
    }
+#  elif defined(VGO_gnu) 
+   vg_assert(0);
 #  else
 #    error Unknown OS
 #  endif
@@ -463,6 +489,8 @@ Int VG_(poll) (struct vki_pollfd *fds, Int nfds, Int timeout)
    res = VG_(do_syscall3)(__NR_poll, (UWord)fds, nfds, timeout);
 #  elif defined(VGO_darwin)
    res = VG_(do_syscall3)(__NR_poll_nocancel, (UWord)fds, nfds, timeout);
+#  elif defined(VGO_gnu) 
+   vg_assert(0);
 #  else
 #    error "Unknown OS"
 #  endif
@@ -487,6 +515,8 @@ Int VG_(getdents) (Int fd, struct vki_dirent *dirp, UInt count)
    return sr_isError(res) ? -1 : sr_Res(res);
 #  elif defined(VGO_darwin)
    I_die_here;
+#  elif defined(VGO_gnu) 
+   vg_assert(0);
 #  else
 #    error "Unknown OS"
 #  endif
@@ -516,6 +546,10 @@ Int VG_(access) ( const HChar* path, Bool irusr, Bool iwusr, Bool ixusr )
 #  undef VKI_R_OK
 #  undef VKI_W_OK
 #  undef VKI_X_OK
+#  endif
+
+#  if defined(VGO_gnu) 
+   vg_assert(0);
 #  endif
 }
 
@@ -636,6 +670,8 @@ SysRes VG_(pread) ( Int fd, void* buf, Int count, OffT offset )
    res = VG_(do_syscall5)(__NR_pread_nocancel, fd, (UWord)buf, count, 
                           offset & 0xffffffff, offset >> 32);
    return res;
+#  elif defined(VGO_gnu) 
+   vg_assert(0);
 #  else
 #    error "Unknown platform"
 #  endif
@@ -813,6 +849,8 @@ Int VG_(connect_via_socket)( const HChar* str )
 
    return sd;
 
+#  elif defined(VGO_gnu) 
+   vg_assert(0);
 #  else
 #    error "Unknown OS"
 #  endif
@@ -896,6 +934,8 @@ Int VG_(socket) ( Int domain, Int type, Int protocol )
    }
    return sr_isError(res) ? -1 : sr_Res(res);
 
+#  elif defined(VGO_gnu) 
+   vg_assert(0);
 #  else
 #    error "Unknown arch"
 #  endif
@@ -927,6 +967,8 @@ Int my_connect ( Int sockfd, struct vki_sockaddr_in* serv_addr, Int addrlen )
                           sockfd, (UWord)serv_addr, addrlen);
    return sr_isError(res) ? -1 : sr_Res(res);
 
+#  elif defined(VGO_gnu) 
+   vg_assert(0);
 #  else
 #    error "Unknown arch"
 #  endif
@@ -966,6 +1008,8 @@ Int VG_(write_socket)( Int sd, const void *msg, Int count )
    res = VG_(do_syscall3)(__NR_write_nocancel, sd, (UWord)msg, count);
    return sr_isError(res) ? -1 : sr_Res(res);
 
+#  elif defined(VGO_gnu) 
+   vg_assert(0);
 #  else
 #    error "Unknown platform"
 #  endif
@@ -997,6 +1041,8 @@ Int VG_(getsockname) ( Int sd, struct vki_sockaddr *name, Int *namelen)
                            (UWord)sd, (UWord)name, (UWord)namelen );
    return sr_isError(res) ? -1 : sr_Res(res);
 
+#  elif defined(VGO_gnu) 
+   vg_assert(0);
 #  else
 #    error "Unknown platform"
 #  endif
@@ -1028,6 +1074,8 @@ Int VG_(getpeername) ( Int sd, struct vki_sockaddr *name, Int *namelen)
                            (UWord)sd, (UWord)name, (UWord)namelen );
    return sr_isError(res) ? -1 : sr_Res(res);
 
+#  elif defined(VGO_gnu) 
+   vg_assert(0);
 #  else
 #    error "Unknown platform"
 #  endif
@@ -1063,6 +1111,8 @@ Int VG_(getsockopt) ( Int sd, Int level, Int optname, void *optval,
                            (UWord)optval, (UWord)optlen );
    return sr_isError(res) ? -1 : sr_Res(res);
 
+#  elif defined(VGO_gnu) 
+   vg_assert(0);
 #  else
 #    error "Unknown platform"
 #  endif
@@ -1099,6 +1149,8 @@ Int VG_(setsockopt) ( Int sd, Int level, Int optname, void *optval,
                            (UWord)optval, (UWord)optlen );
    return sr_isError(res) ? -1 : sr_Res(res);
 
+#  elif defined(VGO_gnu) 
+   vg_assert(0);
 #  else
 #    error "Unknown platform"
 #  endif
