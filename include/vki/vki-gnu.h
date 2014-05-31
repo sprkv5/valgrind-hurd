@@ -116,4 +116,11 @@
 */
 
 
+#include <i386-gnu/bits/resource.h>
+
+#define vki_rlimit rlimit
+#define vki_rlimit64 rlimit64
+#define vki_rusage rusage
+
+
 #endif
