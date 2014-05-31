@@ -116,7 +116,7 @@
 */
 
 
-#include <i386-gnu/bits/resource.h>
+#include <i386-gnu/sys/resource.h>
 
 #define vki_rlimit rlimit
 #define vki_rlimit64 rlimit64
