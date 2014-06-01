@@ -113,6 +113,7 @@ SysRes VG_(mknod) ( const HChar* pathname, Int mode, UWord dev )
    SysRes res = VG_(do_syscall3)(__NR_mknod,
                                  (UWord)pathname, mode, dev);
 #  elif defined(VGO_gnu) 
+   SysRes res;
    vg_assert(0);
 #  else
 #    error Unknown OS
@@ -394,6 +395,7 @@ Int VG_(fcntl) ( Int fd, Int cmd, Addr arg )
 #  elif defined(VGO_darwin)
    SysRes res = VG_(do_syscall3)(__NR_fcntl_nocancel, fd, cmd, arg);
 #  elif defined(VGO_gnu) 
+   SysRes res;
    vg_assert(0);
 #  else
 #    error "Unknown OS"
@@ -489,7 +491,8 @@ Int VG_(poll) (struct vki_pollfd *fds, Int nfds, Int timeout)
    res = VG_(do_syscall3)(__NR_poll, (UWord)fds, nfds, timeout);
 #  elif defined(VGO_darwin)
    res = VG_(do_syscall3)(__NR_poll_nocancel, (UWord)fds, nfds, timeout);
-#  elif defined(VGO_gnu) 
+#  elif defined(VGO_gnu)
+   SysRes res;
    vg_assert(0);
 #  else
 #    error "Unknown OS"
