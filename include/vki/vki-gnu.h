@@ -123,4 +123,55 @@
 #define vki_rusage rusage
 
 
+#include <signal.h>
+
+#define vki_sigset_t sigset_t
+#define vki_siginfo_t siginfo_t
+#define vki_stack_t stack_t
+
+
+#define VKI_SIG_ERR SIG_ERR
+#define VKI_SIG_DFL SIG_DFL
+#define VKI_SIG_IGN SIG_IGN
+
+#define VKI_SIG_HOLD    SIG_HOLD
+
+#define VKI_SIGHUP  SIGHUP
+#define VKI_SIGINT  SIGINT
+#define VKI_SIGQUIT SIGQUIT
+#define VKI_SIGILL  SIGILL
+#define VKI_SIGABRT SIGABRT
+#define VKI_SIGTRAP SIGTRAP
+#define VKI_SIGIOT  SIGIOT
+#define VKI_SIGEMT  SIGEMT
+#define VKI_SIGFPE  SIGFPE
+#define VKI_SIGKILL SIGKILL
+#define VKI_SIGBUS  SIGBUS
+#define VKI_SIGSEGV SIGSEGV
+#define VKI_SIGSYS  SIGSYS
+#define VKI_SIGPIPE SIGPIPE
+#define VKI_SIGALRM SIGALRM
+#define VKI_SIGTERM SIGTERM
+#define VKI_SIGURG  SIGURG
+#define VKI_SIGSTOP SIGSTOP
+#define VKI_SIGTSTP SIGTSTP
+#define VKI_SIGCONT SIGCONT
+#define VKI_SIGCHLD SIGCHLD
+#define VKI_SIGCLD  SIGCLD
+#define VKI_SIGTTIN SIGTTIN
+#define VKI_SIGTTOU SIGTTOU
+#define VKI_SIGIO   SIGIO
+#define VKI_SIGPOLL SIGPOLL
+#define VKI_SIGXCPU SIGXCPU
+#define VKI_SIGXFSZ SIGXFSZ
+#define VKI_SIGVTALRM   SIGVTALRM
+#define VKI_SIGPROF SIGPROF
+#define VKI_SIGWINCH    SIGWINCH
+#define VKI_SIGINFO SIGINFO
+#define VKI_SIGUSR1 SIGUSR1
+#define VKI_SIGUSR2 SIGUSR2
+#define VKI_SIGLOST SIGLOST
+
+#define VKI__NSIG _NSIG
+
 #endif

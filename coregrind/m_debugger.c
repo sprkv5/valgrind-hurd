@@ -345,6 +345,8 @@ static Int ptrace_setregs(Int pid, VexGuestArchState* vex)
    regs.MIPS_r31     = vex->guest_r31;
    return VG_(ptrace)(VKI_PTRACE_SETREGS, pid, NULL, &regs);
 
+#elif defined(VGP_x86_gnu)
+   I_die_here;
 #else
 #  error Unknown arch
 #endif
