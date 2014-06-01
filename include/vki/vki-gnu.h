@@ -176,4 +176,30 @@ typedef  struct sigaction  vki_sigaction_fromK_t;
 
 #define VKI__NSIG _NSIG
 
+
+// From /usr/inclide/i386-gnu/sys/ptrace.h
+
+#define VKI_PTRACE_TRACEME     0
+#define VKI_PTRACE_PEEKTEXT    1
+#define VKI_PTRACE_PEEKDATA    2
+#define VKI_PTRACE_PEEKUSER    3
+#define VKI_PTRACE_POKETEXT    4
+#define VKI_PTRACE_POKEDATA    5
+#define VKI_PTRACE_POKEUSER    6
+#define VKI_PTRACE_CONT        7
+#define VKI_PTRACE_KILL        8
+#define VKI_PTRACE_SINGLESTEP  9
+#define VKI_PTRACE_ATTACH     10
+#define VKI_PTRACE_DETACH     11
+#define VKI_PTRACE_GETREGS    12
+#define VKI_PTRACE_SETREGS    13
+#define VKI_PTRACE_GETFPREGS  14
+#define VKI_PTRACE_SETFPREGS  15
+#define VKI_PTRACE_READDATA   16
+#define VKI_PTRACE_WRITEDATA  17
+#define VKI_PTRACE_READTEXT   18
+#define VKI_PTRACE_WRITETEXT  19
+#define VKI_PTRACE_GETFPAREGS 20
+#define VKI_PTRACE_SETFPAREGS 21
+
 #endif
