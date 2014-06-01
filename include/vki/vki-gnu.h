@@ -227,5 +227,6 @@ typedef  struct sigaction  vki_sigaction_fromK_t;
 #define VKI_F_SETLK     F_SETLK
 #define VKI_F_SETLKW    F_SETLKW
 
+#define VKI_FD_CLOEXEC  FD_CLOEXEC
 
 #endif
