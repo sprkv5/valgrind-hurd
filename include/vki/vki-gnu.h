@@ -129,6 +129,8 @@
 #define vki_siginfo_t siginfo_t
 #define vki_stack_t stack_t
 
+typedef  struct sigaction  vki_sigaction_toK_t;
+typedef  struct sigaction  vki_sigaction_fromK_t;
 
 #define VKI_SIG_ERR SIG_ERR
 #define VKI_SIG_DFL SIG_DFL
