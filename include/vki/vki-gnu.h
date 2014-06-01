@@ -202,4 +202,30 @@ typedef  struct sigaction  vki_sigaction_fromK_t;
 #define VKI_PTRACE_GETFPAREGS 20
 #define VKI_PTRACE_SETFPAREGS 21
 
+
+#include <fcntl.h>
+
+#define VKI_O_RDONLY    O_RDONLY
+#define VKI_O_WRONLY    O_WRONLY
+#define VKI_O_RDWR      O_RDWR
+#define VKI_O_ACCMODE   O_ACCMODE
+#define VKI_O_CREAT     O_CREAT
+#define VKI_O_EXCL      O_EXCL
+#define VKI_O_APPEND    O_APPEND
+#define VKI_O_NONBLOCK  O_NONBLOCK
+#define VKI_O_LARGEFILE O_LARGEFILE
+#define VKI_O_TRUNC     O_TRUNC
+
+#define VKI_F_DUPFD     F_DUPFD
+#define VKI_F_GETFD     F_GETFD
+#define VKI_F_SETFD     F_SETFD
+#define VKI_F_GETFL     F_GETFL
+#define VKI_F_SETFL     F_SETFL
+#define VKI_F_GETOWN    F_GETOWN
+#define VKI_F_SETOWN    F_SETOWN
+#define VKI_F_GETLK     F_GETLK
+#define VKI_F_SETLK     F_SETLK
+#define VKI_F_SETLKW    F_SETLKW
+
+
 #endif
