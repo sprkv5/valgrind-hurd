@@ -465,7 +465,10 @@ static UInt local_sys_getpid ( void )
 }
 
 #elif defined(VGP_x86_gnu)
-   vg_assert(0);
+static void a_funtion()
+{
+    vg_assert(0);
+}
 
 #else
 # error Unknown platform
