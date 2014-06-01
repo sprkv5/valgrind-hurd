@@ -32,56 +32,95 @@
 #define __VKI_GNU_H
 
 
+#include <stdint.h>
+
+#define vki_int8_t int8_t
+#define vki_uint8_t uint8_t
+#define vki_int16_t int16_t
+#define vki_uint16_t uint16_t
+#define vki_int32_t int32_t
+#define vki_uint32_t uint32_t
+#define vki_int64_t int64_t
+#define vki_uint64_t uint64_t
+
+
+// #include <malloc.h>
+// tbd (to be done)
+
+
+#include <time.h>
+
+#define vki_timespec timespec
+#define vki_tm tm
+#define vki_itimerspec itimerspec
+#define vki_sigevent sigevent
+
+
 // Since there's no upper limit on the length of a path as is the
 // case with GNU, VKI_PATH_MAX is set arbitrarily.
 
 #define VKI_PATH_MAX 4096
 
 
-//----------------------------------------------------------------------
-// From /usr/include/i386-gnu/bits/stat.h
-//  and /usr/include/i386-gnu/sys/stat.h
-//----------------------------------------------------------------------
+#include <i386-gnu/sys/stat.h>
 
-#define VKI_S_IFMT    0170000
+#define VKI_S_IFMT S_IFMT
+#define VKI_S_IFDIR S_IFDIR
+#define VKI_S_IFCHR S_IFCHR
+#define VKI_S_IFBLK S_IFBLK
+#define VKI_S_IFREG S_IFREG
+#define VKI_S_IFIFO S_IFIFO
+#define VKI_S_IFLNK S_IFLNK
+#define VKI_S_IFSOCK S_IFSOCK
 
-#define VKI_S_IFDIR   0040000
-#define VKI_S_IFCHR   0020000
-#define VKI_S_IFBLK   0060000
-#define VKI_S_IFREG   0100000
-#define VKI_S_IFLNK   0120000
-#define VKI_S_IFSOCK  0140000
-#define VKI_S_IFIFO   0010000
+#define VKI_S_ISTYPE(md, ms)  __S_ISTYPE(md, ms)
 
-#define VKI_S_ISTYPE(mode, mask)  (((mode) & VKI_S_IFMT) == (mask))
+#define VKI_S_ISDIR(m) S_ISDIR(m)
+#define VKI_S_ISCHR(m) S_ISCHR(m)
+#define VKI_S_ISBLK(m) S_ISBLK(m)
+#define VKI_S_ISREG(m) S_ISREG(m)
+#define VKI_S_ISFIFO(m) S_ISFIFO(m)
+#define VKI_S_ISLNK(m) S_ISLNK(m)
+#define VKI_S_ISSOCK(m) S_ISSOCK(m)
 
-#define VKI_S_ISDIR(mode)    VKI_S_ISTYPE((mode), VKI_S_IFDIR)
-#define VKI_S_ISCHR(mode)    VKI_S_ISTYPE((mode), VKI_S_IFCHR)
-#define VKI_S_ISBLK(mode)    VKI_S_ISTYPE((mode), VKI_S_IFBLK)
-#define VKI_S_ISREG(mode)    VKI_S_ISTYPE((mode), VKI_S_IFREG)
-#define VKI_S_ISFIFO(mode)   VKI_S_ISTYPE((mode), VKI_S_IFIFO)
-#define VKI_S_ISLNK(mode)    VKI_S_ISTYPE((mode), VKI_S_IFLNK)
-#define VKI_S_ISSOCK(mode)   VKI_S_ISTYPE((mode), VKI_S_IFSOCK)
+#define VKI_S_ISUID S_ISUID
+#define VKI_S_ISGID S_ISGID
+#define VKI_S_ISVTX S_ISVTX
+#define VKI_S_IRUSR S_IRUSR
+#define VKI_S_IWUSR S_IWUSR
+#define VKI_S_IXUSR S_IXUSR
+#define VKI_S_IRWXU S_IRWXU
+#define VKI_S_IRGRP S_IRGRP
+#define VKI_S_IWGRP S_IWGRP
+#define VKI_S_IXGRP S_IXGRP
+#define VKI_S_IRWXG S_IRWXG
+#define VKI_S_IROTH S_IROTH
+#define VKI_S_IWOTH S_IWOTH
+#define VKI_S_IXOTH S_IXOTH
+#define VKI_S_IRWXO S_IRWXO
 
-#define VKI_S_ISUID   04000
-#define VKI_S_ISGID   02000
-#define VKI_S_ISVTX   01000
-#define VKI_S_IREAD   00400
-#define VKI_S_IWRITE  00200
-#define VKI_S_IEXEC   00100
 
-#define VKI_S_IRUSR VKI_S_IREAD
-#define VKI_S_IWUSR VKI_S_IWRITE
-#define VKI_S_IXUSR VKI_S_IEXEC
-#define VKI_S_IRWXU (VKI_S_IREAD|VKI_S_IWRITE|VKI_S_IEXEC)
 
-#define VKI_S_IRGRP (VKI_S_IRUSR >> 3)
-#define VKI_S_IWGRP (VKI_S_IWUSR >> 3)
-#define VKI_S_IXGRP (VKI_S_IXUSR >> 3)
-#define VKI_S_IRWXG (VKI_S_IRWXU >> 3)
+/*
+   #if defined __USE_BSD && !defined __S_IFLNK
+   # define S_ISLNK(mode)  0
+   #endif
 
-#define VKI_S_IROTH (VKI_S_IRGRP >> 3)
-#define VKI_S_IWOTH (VKI_S_IWGRP >> 3)
-#define VKI_S_IXOTH (VKI_S_IXGRP >> 3)
-#define VKI_S_IRWXO (VKI_S_IRWXG >> 3)
+   #if defined __USE_MISC && defined __USE_BSD
+   # define S_IREAD    S_IRUSR
+   # define S_IWRITE   S_IWUSR
+   # define S_IEXEC    S_IXUSR
+   #endif
 
+   These are not required, I suppose.
+*/
+
+
+#include <i386-gnu/sys/resource.h>
+
+#define vki_rlimit rlimit
+#define vki_rlimit64 rlimit64
+#define vki_rusage rusage
+
+
+#endif
