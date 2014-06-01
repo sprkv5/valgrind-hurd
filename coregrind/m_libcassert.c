@@ -202,7 +202,7 @@
         (srP)->misc.MIPS64.r31 = (ULong)ra;               \
         (srP)->misc.MIPS64.r28 = (ULong)gp;               \
       }
-#elif defined(VGO_x86_gnu)
+#elif defined(VGP_x86_gnu)
    static void a_function()
       {
         vg_assert(0);
