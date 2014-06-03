@@ -52,6 +52,9 @@
 
 static inline Bool fd_exists(Int fd)
 {
+#  if defined(VGO_gnu)
+   vg_assert(0);
+#  endif
    struct vg_stat st;
    return VG_(fstat)(fd, &st) == 0;
 }
@@ -59,6 +62,9 @@ static inline Bool fd_exists(Int fd)
 /* Move an fd into the Valgrind-safe range */
 Int VG_(safe_fd)(Int oldfd)
 {
+#  if defined(VGO_gnu)
+   vg_assert(0);
+#  endif
    Int newfd;
 
    vg_assert(VG_(fd_hard_limit) != -1);
@@ -130,6 +136,7 @@ SysRes VG_(open) ( const HChar* pathname, Int flags, Int mode )
    SysRes res = VG_(do_syscall3)(__NR_open_nocancel,
                                  (UWord)pathname, flags, mode);
 #  elif defined(VGO_gnu) 
+   SysRes res;
    vg_assert(0);
 #  else
 #    error Unknown OS
@@ -139,6 +146,9 @@ SysRes VG_(open) ( const HChar* pathname, Int flags, Int mode )
 
 Int VG_(fd_open) (const HChar* pathname, Int flags, Int mode)
 {
+#  if defined(VGO_gnu)
+   vg_assert(0);
+#  endif
    SysRes sr;
    sr = VG_(open) (pathname, flags, mode);
    if (sr_isError (sr))
@@ -170,6 +180,7 @@ Int VG_(read) ( Int fd, void* buf, Int count)
 #  elif defined(VGO_darwin)
    SysRes res = VG_(do_syscall3)(__NR_read_nocancel, fd, (UWord)buf, count);
 #  elif defined(VGO_gnu) 
+   SysRes res;
    vg_assert(0);
 #  else
 #    error Unknown OS
@@ -192,6 +203,7 @@ Int VG_(write) ( Int fd, const void* buf, Int count)
 #  elif defined(VGO_darwin)
    SysRes res = VG_(do_syscall3)(__NR_write_nocancel, fd, (UWord)buf, count);
 #  elif defined(VGO_gnu) 
+   SysRes res;
    vg_assert(0);
 #  else
 #    error "Unknown OS"
@@ -358,6 +370,9 @@ Int VG_(fstat) ( Int fd, struct vg_stat* vgbuf )
 
 Long VG_(fsize) ( Int fd )
 {
+#  if defined(VGO_gnu)
+   vg_assert(0);
+#  endif
    struct vg_stat buf;
    Int res = VG_(fstat)( fd, &buf );
    return (res == -1) ? (-1LL) : buf.size;
@@ -365,6 +380,9 @@ Long VG_(fsize) ( Int fd )
 
 Bool VG_(is_dir) ( const HChar* f )
 {
+#  if defined(VGO_gnu)
+   vg_assert(0);
+#  endif
    struct vg_stat buf;
    SysRes res = VG_(stat)(f, &buf);
    return sr_isError(res) ? False
@@ -373,6 +391,9 @@ Bool VG_(is_dir) ( const HChar* f )
 
 SysRes VG_(dup) ( Int oldfd )
 {
+#  if defined(VGO_gnu)
+   vg_assert(0);
+#  endif
    return VG_(do_syscall1)(__NR_dup, oldfd);
 }
 
@@ -405,12 +426,18 @@ Int VG_(fcntl) ( Int fd, Int cmd, Addr arg )
 
 Int VG_(rename) ( const HChar* old_name, const HChar* new_name )
 {
+#  if defined(VGO_gnu)
+   vg_assert(0);
+#  endif
    SysRes res = VG_(do_syscall2)(__NR_rename, (UWord)old_name, (UWord)new_name);
    return sr_isError(res) ? (-1) : 0;
 }
 
 Int VG_(unlink) ( const HChar* file_name )
 {
+#  if defined(VGO_gnu)
+   vg_assert(0);
+#  endif
    SysRes res = VG_(do_syscall1)(__NR_unlink, (UWord)file_name);
    return sr_isError(res) ? (-1) : 0;
 }
@@ -476,6 +503,9 @@ Bool VG_(record_startup_wd) ( void )
    or return False if buf isn't big enough. */
 Bool VG_(get_startup_wd) ( HChar* buf, SizeT size )
 {
+#  if defined(VGO_gnu)
+   vg_assert(0);
+#  endif
    vg_assert(startup_wd_acquired);
    vg_assert(startup_wd[ sizeof(startup_wd)-1 ] == 0);
    if (1+VG_(strlen)(startup_wd) >= size)
@@ -503,6 +533,9 @@ Int VG_(poll) (struct vki_pollfd *fds, Int nfds, Int timeout)
 
 Int VG_(readlink) (const HChar* path, HChar* buf, UInt bufsiz)
 {
+#  if defined(VGO_gnu)
+   vg_assert(0);
+#  endif
    SysRes res;
    /* res = readlink( path, buf, bufsiz ); */
    res = VG_(do_syscall3)(__NR_readlink, (UWord)path, (UWord)buf, bufsiz);
@@ -579,6 +612,9 @@ Int VG_(access) ( const HChar* path, Bool irusr, Bool iwusr, Bool ixusr )
 Int VG_(check_executable)(/*OUT*/Bool* is_setuid,
                           const HChar* f, Bool allow_setuid)
 {
+#  if defined(VGO_gnu)
+   vg_assert(0);
+#  endif
    struct vg_stat st;
    SysRes res = VG_(stat)(f, &st);
 
@@ -683,6 +719,9 @@ SysRes VG_(pread) ( Int fd, void* buf, Int count, OffT offset )
 /* Return the name of a directory for temporary files. */
 const HChar *VG_(tmpdir)(void)
 {
+#  if defined(VGO_gnu)
+   vg_assert(0);
+#  endif
    const HChar *tmpdir;
 
    tmpdir = VG_(getenv)("TMPDIR");
@@ -696,6 +735,9 @@ static const HChar *mkstemp_format = "%s/valgrind_%s_%08x";
 
 SizeT VG_(mkstemp_fullname_bufsz) ( SizeT part_of_name_len )
 {
+#  if defined(VGO_gnu)
+   vg_assert(0);
+#  endif
    return VG_(strlen)(mkstemp_format)
       + VG_(strlen)(VG_(tmpdir)()) - 2 // %s tmpdir
       + part_of_name_len - 2           // %s part_of_name
@@ -711,6 +753,9 @@ SizeT VG_(mkstemp_fullname_bufsz) ( SizeT part_of_name_len )
 
 Int VG_(mkstemp) ( HChar* part_of_name, /*OUT*/HChar* fullname )
 {
+#  if defined(VGO_gnu)
+   vg_assert(0);
+#  endif
    HChar  buf[VG_(mkstemp_fullname_bufsz)(VG_(strlen)(part_of_name))];
    Int    n, tries, fd;
    UInt   seed;
@@ -1162,6 +1207,9 @@ Int VG_(setsockopt) ( Int sd, Int level, Int optname, void *optval,
 
 const HChar *VG_(basename)(const HChar *path)
 {
+#  if defined(VGO_gnu)
+   vg_assert(0);
+#  endif
    static HChar buf[VKI_PATH_MAX];
    
    const HChar *p, *end;
@@ -1198,6 +1246,9 @@ const HChar *VG_(basename)(const HChar *path)
 
 const HChar *VG_(dirname)(const HChar *path)
 {
+#  if defined(VGO_gnu)
+   vg_assert(0);
+#  endif
    static HChar buf[VKI_PATH_MAX];
     
    const HChar *p;
