@@ -32,7 +32,7 @@
 #define __VKI_GNU_H
 
 
-#include <stdint.h> //done
+#include <stdint.h>
 
 #define vki_int8_t int8_t
 #define vki_uint8_t uint8_t
@@ -76,7 +76,7 @@
 #include <malloc.h> //inc
 
 
-#include <time.h> //done
+#include <time.h>
 
 #define vki_timeval timeval
 #define vki_timespec timespec
@@ -85,7 +85,7 @@
 #define vki_sigevent sigevent
 
 
-#include <i386-gnu/sys/stat.h> //done
+#include <i386-gnu/sys/stat.h>
 
 #define VKI_S_IFMT S_IFMT
 #define VKI_S_IFDIR S_IFDIR
@@ -147,14 +147,14 @@
 #define st_ctime_nsec st_ctimespec.tv_nsec
 
 
-#include <dirent.h> //done
+#include <dirent.h>
 
 #define vki_dirent dirent
 #define vki_dirent64 dirent64
 #define VKI_MAXNAMLEN MAXNAMLEN
 
 
-#include <i386-gnu/sys/socket.h> //inc
+#include <i386-gnu/sys/socket.h>
 
 //#define VKI_SOCKET_TYPE __socket_type
 #define VKI_SOCK_STREAM SOCK_STREAM
@@ -185,12 +185,12 @@
 #define vki_cmsghdr 	cmsghdr
 
 
-#include <i386-gnu/sys/un.h> //done
+#include <i386-gnu/sys/un.h>
 
 #define vki_sockaddr_un sockaddr_un
 
 
-#include <netinet/in.h> //done
+#include <netinet/in.h>
 
 #define vki_in_addr_t in_addr_t
 #define vki_in_port_t in_port_t
@@ -200,7 +200,7 @@
 #define vki_in6_addr in6_addr
 #define vki_sockaddr_in6 sockaddr_in6
 
-#include <net/if.h> //done
+#include <net/if.h>
 
 #define VKI_IFNAMSIZ	IF_NAMESIZE
 
@@ -227,7 +227,7 @@
 #define vki_ifc_req 	ifc_req
 
 
-#include <fcntl.h> //done
+#include <fcntl.h>
 
 #define VKI_O_RDONLY    	O_RDONLY
 #define VKI_O_WRONLY    	O_WRONLY
@@ -276,11 +276,11 @@
 #define	VKI_FD_CLOEXEC	FD_CLOEXEC
 
 #define	VKI_F_RDLCK		F_RDLCK
-#define	VKI_F_WRLCK		F_WRLCK	
-#define	VKI_F_UNLCK		F_UNLCK	
+#define	VKI_F_WRLCK		F_WRLCK
+#define	VKI_F_UNLCK		F_UNLCK
 
 
-#include <i386-gnu/sys/mman.h> //done
+#include <i386-gnu/sys/mman.h>
 
 #define	VKI_PROT_NONE	PROT_NONE
 #define	VKI_PROT_READ	PROT_READ
@@ -300,12 +300,12 @@
 
 #define VKI_MAP_NOEXTEND	MAP_NOEXTEND
 #define VKI_MAP_HASSEMPHORE MAP_HASSEMPHORE
-#define VKI_MAP_INHERIT	 	MAP_INHERIT	
+#define VKI_MAP_INHERIT	 	MAP_INHERIT
 
 #define VKI_MAP_FAILED	MAP_FAILED
 
 
-#include <i386-gnu/a.out.h> //done
+#include <i386-gnu/a.out.h>
 
 #define VKI_PAGE_SIZE		PAGE_SIZE
 #define VKI_MAX_PAGE_SIZE	VKI_PAGE_SIZE
@@ -318,7 +318,7 @@
 #define VKI_MAXPATHLEN	VKI_PATH_MAX
 
 
-#include <signal.h> //done
+#include <signal.h>
 
 #define VKI_MINSIGSTKSZ	MINSIGSTKSZ
 
@@ -326,7 +326,7 @@
 #define	VKI_SIG_UNBLOCK	SIG_UNBLOCK
 #define	VKI_SIG_SETMASK	SIG_SETMASK
 
-#define	VKI_SIG_ERR	 SIG_ERR	
+#define	VKI_SIG_ERR	 SIG_ERR
 #define	VKI_SIG_DFL	 SIG_DFL
 #define	VKI_SIG_IGN	 SIG_IGN
 #define VKI_SIG_HOLD SIG_HOLD
@@ -337,8 +337,8 @@
 
 
 #define	VKI_SIGHUP		SIGHUP
-#define	VKI_SIGINT		SIGINT	
-#define	VKI_SIGQUIT		SIGQUIT	
+#define	VKI_SIGINT		SIGINT
+#define	VKI_SIGQUIT		SIGQUIT
 #define	VKI_SIGILL		SIGILL
 #define	VKI_SIGTRAP		SIGTRAP
 #define	VKI_SIGIOT		SIGIOT
@@ -369,7 +369,7 @@
 #define	VKI_SIGWINCH	SIGWINCH
 #define VKI_SIGINFO		SIGINFO
 #define	VKI_SIGUSR1		SIGUSR1
-#define	VKI_SIGUSR2		SIGUSR2	
+#define	VKI_SIGUSR2		SIGUSR2
 #define VKI_SIGLOST		SIGLOST
 
 #define VKI_SA_ONSTACK	 SA_ONSTACK
@@ -388,21 +388,19 @@
 #define VKI_SS_DISABLE   SS_DISABLE
 
 
-#define vki_sigset_t  sigset_t;
-#define vki_siginfo_t siginfo_t;
+#define vki_sigset_t  sigset_t
+#define vki_siginfo_t siginfo_t
 
-typedef void __vki_signalfn_t(int);
-typedef __vki_signalfn_t __user *__vki_sighandler_t;
+/*
+//typedef void __vki_signalfn_t(int);
+//typedef __vki_signalfn_t __user *__vki_sighandler_t;
 
 struct vki_sigaction_base
   {
-    /* Signal handler.  */
 #ifdef __USE_POSIX199309
     union
       {
-	/* Used if SA_SIGINFO is not set.  */
 	__vki_sighandler_t sa_handler;
-	/* Used if SA_SIGINFO is set.  */
 	void (*sa_sigaction) (int, vki_siginfo_t *, void *);
       }
     __vki_sigaction_handler;
@@ -412,14 +410,13 @@ struct vki_sigaction_base
     __vki_sighandler_t sa_handler;
 #endif
 
-    /* Additional set of signals to be blocked.  */
     vki_sigset_t sa_mask;
 
-    /* Special flags.  */
     int sa_flags;
   };
+*/
 
-
+#define vki_sigaction_base sigaction
 typedef  struct vki_sigaction_base  vki_sigaction_toK_t;
 typedef  struct vki_sigaction_base  vki_sigaction_fromK_t;
 
@@ -476,7 +473,8 @@ typedef  struct vki_sigaction_base  vki_sigaction_fromK_t;
 #define VKI_POLL_PRI	POLL_PRI
 #define VKI_POLL_HUP	POLL_HUP
 
-#include <i386-gnu/bits/errno.h> //done
+#include <errno.h>
+
 #define	VKI_EPERM EPERM
 #define	VKI_ENOENT ENOENT
 #define	VKI_ESRCH ESRCH
@@ -581,7 +579,7 @@ typedef  struct vki_sigaction_base  vki_sigaction_fromK_t;
 #define	VKI_ECANCELED ECANCELED
 
 
-#include <i386-gnu/sys/resource.h> //done
+#include <i386-gnu/sys/resource.h>
 
 //#define VKI_RLIMIT_RESOURCE __rlimit_resource
 
@@ -608,7 +606,7 @@ typedef  struct vki_sigaction_base  vki_sigaction_fromK_t;
 #define vki_rusage rusage
 
 
-#include <i386-gnu/sys/poll.h> 
+#include <i386-gnu/sys/poll.h>
 
 #define vki_pollfd pollfd
 
@@ -616,10 +614,10 @@ typedef  struct vki_sigaction_base  vki_sigaction_fromK_t;
 #define VKI_POLLPRI	POLLPRI
 #define VKI_POLLOUT	POLLOUT
 
-#define POLLRDNORM	VKI_POLLIN
-#define POLLRDBAND	VKI_POLLPRI
-#define POLLWRNORM	VKI_POLLOUT
-#define POLLWRBAND	VKI_POLLOUT
+#define VKI_POLLRDNORM	VKI_POLLIN
+#define VKI_POLLRDBAND	VKI_POLLPRI
+#define VKI_POLLWRNORM	VKI_POLLOUT
+#define VKI_POLLWRBAND	VKI_POLLOUT
 
 #define VKI_POLLERR	POLLERR
 #define VKI_POLLHUP	POLLHUP
@@ -657,7 +655,7 @@ typedef  struct vki_sigaction_base  vki_sigaction_fromK_t;
 #define vki_sem_t sem_t
 
 
-#include <rpcsvc/mount.h> //inc 
+#include <rpcsvc/mount.h> //inc
 
 
 #include <i386-gnu/sys/select.h>
