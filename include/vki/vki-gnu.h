@@ -392,29 +392,31 @@
 #define vki_siginfo_t siginfo_t
 
 
-typedef void __vki_signalfn_t(int);
-typedef __vki_signalfn_t __user *__vki_sighandler_t;
+#define __vki_sighandler_t __sighandler_t
 
 struct vki_sigaction_base
   {
+    /* Signal handler.  */
 #ifdef __USE_POSIX199309
     union
       {
-	__vki_sighandler_t ksa_handler;
-	void (*sa_sigaction) (int, vki_siginfo_t *, void *);
-      }
-    __vki_sigaction_handler;
-# define ksa_handler	__vki_sigaction_handler.ksa_handler
-# define sa_sigaction	__vki_sigaction_handler.sa_sigaction
+    /* Used if SA_SIGINFO is not set.  */
+    __vki_sighandler_t ksa_handler;
+    /* Used if SA_SIGINFO is set.  */
+    void (*ksa_sigaction) (int, vki_siginfo_t *, void *);
+      } __vki_sigaction_handler;
+# define ksa_handler    __vki_sigaction_handler.ksa_handler
+# define ksa_sigaction   __vki_sigaction_handler.ksa_sigaction
 #else
     __vki_sighandler_t ksa_handler;
 #endif
 
+    /* Additional set of signals to be blocked.  */
     vki_sigset_t sa_mask;
 
+    /* Special flags.  */
     int sa_flags;
   };
-
 
 //#define vki_sigaction_base sigaction
 typedef  struct vki_sigaction_base  vki_sigaction_toK_t;
