@@ -391,32 +391,32 @@
 #define vki_sigset_t  sigset_t
 #define vki_siginfo_t siginfo_t
 
-/*
-//typedef void __vki_signalfn_t(int);
-//typedef __vki_signalfn_t __user *__vki_sighandler_t;
+
+typedef void __vki_signalfn_t(int);
+typedef __vki_signalfn_t __user *__vki_sighandler_t;
 
 struct vki_sigaction_base
   {
 #ifdef __USE_POSIX199309
     union
       {
-	__vki_sighandler_t sa_handler;
+	__vki_sighandler_t ksa_handler;
 	void (*sa_sigaction) (int, vki_siginfo_t *, void *);
       }
     __vki_sigaction_handler;
-# define sa_handler	__vki_sigaction_handler.sa_handler
+# define ksa_handler	__vki_sigaction_handler.ksa_handler
 # define sa_sigaction	__vki_sigaction_handler.sa_sigaction
 #else
-    __vki_sighandler_t sa_handler;
+    __vki_sighandler_t ksa_handler;
 #endif
 
     vki_sigset_t sa_mask;
 
     int sa_flags;
   };
-*/
 
-#define vki_sigaction_base sigaction
+
+//#define vki_sigaction_base sigaction
 typedef  struct vki_sigaction_base  vki_sigaction_toK_t;
 typedef  struct vki_sigaction_base  vki_sigaction_fromK_t;
 
