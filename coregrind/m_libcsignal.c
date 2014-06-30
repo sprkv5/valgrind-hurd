@@ -174,7 +174,7 @@ void VG_(sigcomplementset)( vki_sigset_t* dst, vki_sigset_t* src )
 */
 Int VG_(sigprocmask)( Int how, const vki_sigset_t* set, vki_sigset_t* oldset)
 {
-#  elif defined(VGO_gnu)
+#  if defined(VGO_gnu)
      vg_assert(0);
 #  else
 #  if defined(VGO_linux)
@@ -311,7 +311,7 @@ VG_(convert_sigaction_fromK_to_toK)( vki_sigaction_fromK_t* fromK,
 
 Int VG_(kill)( Int pid, Int signo )
 {
-#  elif defined(VGO_gnu)
+#  if defined(VGO_gnu)
      vg_assert(0);
 #  else
 
