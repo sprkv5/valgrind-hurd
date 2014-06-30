@@ -340,7 +340,9 @@
    // A `sigset_t' has a bit for each signal. //
    typedef unsigned long int __sigset_t;
    Just because it isn't an array, and the VG_(sig...set) functions
-   assume it is, like darwin, we do:
+   assume it is, like darwin, instead of
+   #define vki_sigset_t __sigset_t
+   we do:
  */
 typedef struct {
    unsigned long int sig[_VKI_NSIG_WORDS];
@@ -398,7 +400,6 @@ typedef struct {
 #define VKI_SS_DISABLE   SS_DISABLE
 
 
-#define vki_sigset_t  sigset_t
 #define vki_siginfo_t siginfo_t
 
 
