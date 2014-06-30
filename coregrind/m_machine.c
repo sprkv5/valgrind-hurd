@@ -154,6 +154,8 @@ void VG_(set_syscall_return_shadows) ( ThreadId tid,
 #  elif defined(VGP_mips32_linux) || defined(VGP_mips64_linux)
    VG_(threads)[tid].arch.vex_shadow1.guest_r2 = s1res;
    VG_(threads)[tid].arch.vex_shadow2.guest_r2 = s2res;
+#  elif defined(VGO_gnu)
+   vg_assert(0);
 #  else
 #    error "Unknown plat"
 #  endif
@@ -1679,6 +1681,8 @@ void* VG_(fnptr_to_fnentry)( void* f )
       address. */
    UWord* descr = (UWord*)f;
    return (void*)(descr[0]);
+#  elif defined(VGO_gnu)
+     vg_assert(0);
 #  else
 #    error "Unknown platform"
 #  endif
