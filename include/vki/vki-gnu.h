@@ -335,6 +335,16 @@
 #define _VKI_NSIG_BPW	33
 #define _VKI_NSIG_WORDS	(_VKI_NSIG / _VKI_NSIG_BPW)
 
+/*
+   In GNU 'sigset_t', is defined as:
+   // A `sigset_t' has a bit for each signal. //
+   typedef unsigned long int __sigset_t;
+   Just because it isn't an array, and the VG_(sig...set) functions
+   assume it is, like darwin, we do:
+ */
+typedef struct {
+   unsigned long int sig[_VKI_NSIG_WORDS];
+} vki_sigset_t;
 
 #define	VKI_SIGHUP		SIGHUP
 #define	VKI_SIGINT		SIGINT
