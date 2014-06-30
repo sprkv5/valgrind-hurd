@@ -393,8 +393,9 @@ SysRes VG_(dup) ( Int oldfd )
 {
 #  if defined(VGO_gnu)
    vg_assert(0);
-#  endif
+#  elif defined(VGO_linux) || defined(VGO_darwin)
    return VG_(do_syscall1)(__NR_dup, oldfd);
+# endif
 }
 
 SysRes VG_(dup2) ( Int oldfd, Int newfd )
@@ -428,18 +429,20 @@ Int VG_(rename) ( const HChar* old_name, const HChar* new_name )
 {
 #  if defined(VGO_gnu)
    vg_assert(0);
-#  endif
+#  elif defined(VGO_linux) || defined(VGO_darwin)
    SysRes res = VG_(do_syscall2)(__NR_rename, (UWord)old_name, (UWord)new_name);
    return sr_isError(res) ? (-1) : 0;
+#  endif
 }
 
 Int VG_(unlink) ( const HChar* file_name )
 {
 #  if defined(VGO_gnu)
    vg_assert(0);
-#  endif
+#  elif defined(VGO_linux) || defined(VGO_darwin)
    SysRes res = VG_(do_syscall1)(__NR_unlink, (UWord)file_name);
    return sr_isError(res) ? (-1) : 0;
+#  endif
 }
 
 /* The working directory at startup.  AIX doesn't provide an easy
@@ -522,7 +525,6 @@ Int VG_(poll) (struct vki_pollfd *fds, Int nfds, Int timeout)
 #  elif defined(VGO_darwin)
    res = VG_(do_syscall3)(__NR_poll_nocancel, (UWord)fds, nfds, timeout);
 #  elif defined(VGO_gnu)
-   SysRes res;
    vg_assert(0);
 #  else
 #    error "Unknown OS"
@@ -535,11 +537,12 @@ Int VG_(readlink) (const HChar* path, HChar* buf, UInt bufsiz)
 {
 #  if defined(VGO_gnu)
    vg_assert(0);
-#  endif
+#  elif defined(VGO_linux) || defined(VGO_darwin)
    SysRes res;
    /* res = readlink( path, buf, bufsiz ); */
    res = VG_(do_syscall3)(__NR_readlink, (UWord)path, (UWord)buf, bufsiz);
    return sr_isError(res) ? -1 : sr_Res(res);
+#  endif
 }
 
 Int VG_(getdents) (Int fd, struct vki_dirent *dirp, UInt count)
@@ -572,11 +575,13 @@ Int VG_(access) ( const HChar* path, Bool irusr, Bool iwusr, Bool ixusr )
 #  define VKI_X_OK 1
 #  endif
 
+#  if defined(VGO_linux) || defined(VGO_darwin)
    UWord w = (irusr ? VKI_R_OK : 0)
              | (iwusr ? VKI_W_OK : 0)
              | (ixusr ? VKI_X_OK : 0);
    SysRes res = VG_(do_syscall2)(__NR_access, (UWord)path, w);
    return sr_isError(res) ? 1 : 0;   
+#  endif
 
 #  if defined(VGO_linux)
 #  undef VKI_R_OK
