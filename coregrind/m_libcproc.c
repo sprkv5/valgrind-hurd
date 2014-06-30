@@ -66,12 +66,10 @@ HChar** VG_(client_envp) = NULL;
 const HChar *VG_(libdir) = VG_LIBDIR;
 
 const HChar *VG_(LD_PRELOAD_var_name) =
-#if defined(VGO_linux)
+#if defined(VGO_linux) || defined(VGO_gnu) //Assuming linux similarity
    "LD_PRELOAD";
 #elif defined(VGO_darwin)
    "DYLD_INSERT_LIBRARIES";
-#elif defined(VGO_gnu)
-    "coregrind/m_libcproc.c"
 #else
 #  error Unknown OS
 #endif
