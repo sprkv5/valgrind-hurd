@@ -190,6 +190,8 @@ Int VG_(sigprocmask)( Int how, const vki_sigset_t* set, vki_sigset_t* oldset)
       __NR___pthread_sigmask instead. */
    SysRes res =  VG_(do_syscall3)(__NR___pthread_sigmask, 
                                   how, (UWord)set, (UWord)oldset);
+#  elif defined(VGO_gnu)
+     vg_assert(0);
 #  else
 #    error "Unknown OS"
 #  endif
@@ -272,6 +274,9 @@ Int VG_(sigaction) ( Int signum,
    }
    return sr_isError(res) ? -1 : 0;
 
+#  elif defined(VGO_gnu)
+     vg_assert(0);
+
 #  else
 #    error "Unsupported OS"
 #  endif
@@ -290,6 +295,12 @@ VG_(convert_sigaction_fromK_to_toK)( vki_sigaction_fromK_t* fromK,
    toK->sa_tramp    = NULL; /* the cause of all the difficulty */
    toK->sa_mask     = fromK->sa_mask;
    toK->sa_flags    = fromK->sa_flags;
+#  elif defined(VGO_gnu)
+   vg_assert(0);
+//   toK->ksahandler  = fromK->ksa_handler;
+//   toK->ksa_sigaction=fromK->ksa_sigaction;
+//   toK->sa_mask     = fromK->sa_mask;
+//   toK->sa_flags    = fromK->sa_flags;
 #  else
 #    error "Unsupported OS"
 #  endif
@@ -303,6 +314,8 @@ Int VG_(kill)( Int pid, Int signo )
 #  elif defined(VGO_darwin)
    SysRes res = VG_(do_syscall3)(__NR_kill,
                                  pid, signo, 1/*posix-compliant*/);
+#  elif defined(VGO_gnu)
+     vg_assert(0);
 #  else
 #    error "Unsupported OS"
 #  endif
@@ -323,6 +336,9 @@ Int VG_(tkill)( Int lwpid, Int signo )
    SysRes res;
    res = VG_(do_syscall2)(__NR___pthread_kill, lwpid, signo);
    return sr_isError(res) ? -1 : 0;
+
+#  elif defined(VGO_gnu)
+     vg_assert(0);
 
 #  else
 #    error "Unsupported plat"
@@ -477,6 +493,8 @@ Int VG_(sigtimedwait_zero)( const vki_sigset_t *set,
   return i;
 }
 
+#elif defined(VGO_gnu)
+  vg_assert(0);
 #else
 #  error "Unknown OS"
 #endif
