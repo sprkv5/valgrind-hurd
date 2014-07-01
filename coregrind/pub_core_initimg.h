@@ -117,6 +117,11 @@ struct _IIFinaliseImageInfo {
    Addr  initial_client_IP;
 };
 
+#elif defined(VGO_gnu)
+static void afunction()
+{
+   vg_assert(0);
+}
 
 #else
 #  error "Unknown OS"
