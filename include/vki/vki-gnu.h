@@ -310,6 +310,10 @@
 #define VKI_PAGE_SIZE		PAGE_SIZE
 #define VKI_MAX_PAGE_SIZE	VKI_PAGE_SIZE
 
+// these 2 symbols were borrowed from gnumach/i386/include/mach/i386/vm_param.h
+
+#define VKI_PAGE_SHIFT      12
+#define VKI_MAX_PAGE_SHIFT  VKI_PAGE_SHIFT
 
 // Since there's no upper limit on the length of a path as is the
 // case with GNU, VKI_PATH_MAX is set arbitrarily.
