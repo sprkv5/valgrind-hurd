@@ -1813,7 +1813,7 @@ Int valgrind_main ( Int argc, HChar **argv, HChar **envp )
    if (!need_help) {
       VG_(debugLog)(1, "main", "Create initial image\n");
 
-#     if defined(VGO_linux) || defined(VGO_darwin)
+#     if defined(VGO_linux) || defined(VGO_darwin) || defined(VGO_gnu)
       the_iicii.argv              = argv;
       the_iicii.envp              = envp;
       the_iicii.toolname          = toolname;
@@ -2112,6 +2112,8 @@ Int valgrind_main ( Int argc, HChar **argv, HChar **envp )
 
      VG_(free)( seg_starts );
    }
+#  elif defined(VGO_gnu)
+   { vg_assert(0); }
 #  else
 #    error Unknown OS
 #  endif
@@ -3182,7 +3184,7 @@ void _start_in_C_darwin ( UWord* pArgc )
 #elif defined(VGO_gnu)
 static void dfunction()
 {
-    vg_assert(0));
+    vg_assert(0);
 }
 
 #else
