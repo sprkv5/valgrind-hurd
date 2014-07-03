@@ -3179,6 +3179,11 @@ void _start_in_C_darwin ( UWord* pArgc )
    VG_(exit)(r);
 }
 
+#elif defined(VGO_gnu)
+static void dfunction()
+{
+    vg_assert(0));
+}
 
 #else
 
