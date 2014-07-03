@@ -2027,6 +2027,8 @@ Int valgrind_main ( Int argc, HChar **argv, HChar **envp )
       iters = 10;
 #     elif defined(VGO_darwin)
       iters = 3;
+#     elif defined(VGO_gnu)
+      iters = 10;
 #     else
 #       error "Unknown plat"
 #     endif
