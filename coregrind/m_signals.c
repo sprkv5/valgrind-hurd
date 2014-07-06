@@ -553,6 +553,9 @@ typedef struct SigQueue {
         (srP)->misc.MIPS64.r31 = (uc)->uc_mcontext.sc_regs[31]; \
         (srP)->misc.MIPS64.r28 = (uc)->uc_mcontext.sc_regs[28]; \
       }
+#elif defined(VGO_gnu)
+static void efunction()
+{  vg_assert(0); }
 
 #else 
 #  error Unknown platform
@@ -566,7 +569,7 @@ typedef struct SigQueue {
 #if defined(VGO_linux)
 #  define VKI_SIGINFO_si_addr  _sifields._sigfault._addr
 #  define VKI_SIGINFO_si_pid   _sifields._kill._pid
-#elif defined(VGO_darwin)
+#elif defined(VGO_darwin) || defined(VGO_gnu)
 #  define VKI_SIGINFO_si_addr  si_addr
 #  define VKI_SIGINFO_si_pid   si_pid
 #else
@@ -901,6 +904,18 @@ extern void my_sigreturn(void);
    "   li $2, " #name "\n" \
    "   syscall\n" \
    ".previous\n"
+
+#elif defined(VGO_gnu)
+/*#  define _MY_SIGRETURN(name) \
+   ".text\n" \
+   ".globl my_sigreturn\n" \
+   "my_sigreturn:\n" \
+   "    movl    $" #name ", %eax\n" \
+   "    int $0x80\n" \
+   ".previous\n"
+copied VGP_x86_linux case code for now */
+static void dfunction()
+{ vg_assert(0); }
 
 #else
 #  error Unknown platform
@@ -1491,6 +1506,10 @@ static Bool is_signal_from_kernel(ThreadId tid, int signum, int si_code)
    } else {
       return True;
    }
+
+#elif defined(VGO_gnu)
+   vg_assert(0);
+
 #  else
 #    error Unknown OS
 #  endif
@@ -2093,7 +2112,9 @@ static int sanitize_si_code(int si_code)
       mask them off) sign extends them when exporting to user space so
       we do the same thing here. */
    return (Short)si_code;
-#elif defined(VGO_darwin)
+
+//Since si_code and struct siginfo have similar code in gnu and darwin
+#elif defined(VGO_darwin) || defined(VGO_gnu)
    return si_code;
 #else
 #  error Unknown OS
