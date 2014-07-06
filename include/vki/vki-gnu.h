@@ -335,8 +335,8 @@
 #define	VKI_SIG_IGN	 SIG_IGN
 #define VKI_SIG_HOLD SIG_HOLD
 
-#define	_VKI_NSIG	33
-#define _VKI_NSIG_BPW	33
+#define	_VKI_NSIG	32
+#define _VKI_NSIG_BPW	32
 #define _VKI_NSIG_WORDS	(_VKI_NSIG / _VKI_NSIG_BPW)
 
 /*
