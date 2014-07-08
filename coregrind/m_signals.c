@@ -2131,8 +2131,7 @@ static int sanitize_si_code(int si_code)
    This should only happen when the thread is blocked in a syscall,
    since that's the only time this set of signals is unblocked.
 */
-static 
-void async_signalhandler ( Int sigNo,
+static void async_signalhandler ( Int sigNo,
                            vki_siginfo_t *info, struct vki_ucontext *uc )
 {
    ThreadId     tid = VG_(lwpid_to_vgtid)(VG_(gettid)());
@@ -2181,6 +2180,8 @@ void async_signalhandler ( Int sigNo,
       thread's tst->arch.vex.guest_SC_CLASS.  Hence: */
 #  if defined(VGO_darwin)
    sres = VG_UCONTEXT_SYSCALL_SYSRES(uc, tst->arch.vex.guest_SC_CLASS);
+#  elif defined(VGO_gnu)
+   vg_assert(0);
 #  else
    sres = VG_UCONTEXT_SYSCALL_SYSRES(uc);
 #  endif
