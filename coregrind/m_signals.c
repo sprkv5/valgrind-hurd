@@ -766,7 +766,11 @@ void calculate_SKSS_from_SCSS ( SKSS* dst )
       skss_flags = 0;
 
       /* SA_NOCLDSTOP, SA_NOCLDWAIT: pass to kernel */
+#     if !defined(VGO_gnu)
       skss_flags |= scss_flags & (VKI_SA_NOCLDSTOP | VKI_SA_NOCLDWAIT);
+#     else
+      skss_flags |= scss_flags & (VKI_SA_NOCLDSTOP | VKI_SIG_IGN);
+#     endif
 
       /* SA_ONESHOT: ignore client setting */
       
@@ -2180,8 +2184,6 @@ static void async_signalhandler ( Int sigNo,
       thread's tst->arch.vex.guest_SC_CLASS.  Hence: */
 #  if defined(VGO_darwin)
    sres = VG_UCONTEXT_SYSCALL_SYSRES(uc, tst->arch.vex.guest_SC_CLASS);
-#  elif defined(VGO_gnu)
-   vg_assert(0);
 #  else
    sres = VG_UCONTEXT_SYSCALL_SYSRES(uc);
 #  endif
