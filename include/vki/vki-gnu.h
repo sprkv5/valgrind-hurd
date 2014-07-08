@@ -400,6 +400,9 @@ typedef struct {
 #define VKI_SA_ONESHOT  VKI_SA_RESETHAND
 #define VKI_SA_STACK    VKI_SA_ONSTACK
 
+// From glibc/sysdeps/unix/sysv/linux/i386/sigaction.c
+#define VKI_SA_RESTORER 0x04000000
+
 #define VKI_SS_ONSTACK   SS_ONSTACK
 #define VKI_SS_DISABLE   SS_DISABLE
 
@@ -741,7 +744,9 @@ typedef  struct vki_sigaction_base  vki_sigaction_fromK_t;
 #define VKI_PTRACE_SETFPAREGS  PTRACE_SETFPAREGS
 
 
+#include <i386-gnu/sys/ucontext.h>
 
+#define vki_ucontext ucontext_t
 
 
 
