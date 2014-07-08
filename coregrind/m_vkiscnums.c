@@ -43,7 +43,7 @@
 */
 
 //---------------------------------------------------------------------------
-#if defined(VGO_linux)
+#if defined(VGO_linux) || defined(VGO_gnu)
 //---------------------------------------------------------------------------
 
 HChar* VG_(sysnum_string)(Word sysnum, SizeT n_buf, HChar* buf)
