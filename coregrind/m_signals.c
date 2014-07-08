@@ -769,7 +769,8 @@ void calculate_SKSS_from_SCSS ( SKSS* dst )
 #     if !defined(VGO_gnu)
       skss_flags |= scss_flags & (VKI_SA_NOCLDSTOP | VKI_SA_NOCLDWAIT);
 #     else
-      skss_flags |= scss_flags & (VKI_SA_NOCLDSTOP | VKI_SIG_IGN);
+      vg_assert(0);
+      //skss_flags |= scss_flags & (VKI_SA_NOCLDSTOP | VKI_SIG_IGN);
 #     endif
 
       /* SA_ONESHOT: ignore client setting */
