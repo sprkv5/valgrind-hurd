@@ -746,7 +746,7 @@ typedef  struct vki_sigaction_base  vki_sigaction_fromK_t;
 
 #include <i386-gnu/sys/ucontext.h>
 
-#define vki_ucontext ucontext_t
+#define vki_ucontext ucontext
 
 
 
