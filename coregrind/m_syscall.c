@@ -253,6 +253,10 @@ SysRes VG_(mk_SysRes_Success) ( UWord res ) {
 }
 
 
+#elif defined(VGO_gnu)
+static void efunction()
+{ vg_assert(0); }
+
 #else
 #  error "Unknown OS"
 #endif
@@ -654,6 +658,10 @@ asm (
 ".previous\n"
 );
 
+#elif defined(VGO_gnu)
+static void ffunction()
+{ vg_assert(0); }
+
 #else
 #  error Unknown platform
 #endif
@@ -777,6 +785,9 @@ SysRes VG_(do_syscall) ( UWord sysno, UWord a1, UWord a2, UWord a3,
    ULong V1 = (ULong)v1_a3[0];
    ULong A3 = (ULong)v1_a3[1];
    return VG_(mk_SysRes_mips64_linux)( V0, V1, A3 );
+
+#elif defined(VGO_gnu)
+   vg_assert(0);
 
 #else
 #  error Unknown platform
