@@ -911,16 +911,16 @@ extern void my_sigreturn(void);
    ".previous\n"
 
 #elif defined(VGO_gnu)
-/*#  define _MY_SIGRETURN(name) \
+#  define _MY_SIGRETURN(name) \
    ".text\n" \
    ".globl my_sigreturn\n" \
    "my_sigreturn:\n" \
    "    movl    $" #name ", %eax\n" \
    "    int $0x80\n" \
    ".previous\n"
-copied VGP_x86_linux case code for now */
-static void dfunction()
-{ vg_assert(0); }
+//copied VGP_x86_linux case code for now
+//static void dfunction()
+//{ vg_assert(0); }
 
 #else
 #  error Unknown platform
