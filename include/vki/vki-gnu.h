@@ -509,7 +509,7 @@ typedef  struct vki_sigaction_base  vki_sigaction_fromK_t;
 #define	VKI_ENOMEM ENOMEM
 #define	VKI_EACCES EACCES
 #define	VKI_EFAULT EFAULT
-#define	VKI_ENOTBL ENOTBLK
+#define	VKI_ENOTBLK ENOTBLK
 #define	VKI_EBUSY EBUSY
 #define	VKI_EEXIST EEXIST
 #define	VKI_EXDEV EXDEV
