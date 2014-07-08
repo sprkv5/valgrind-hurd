@@ -2185,6 +2185,8 @@ static void async_signalhandler ( Int sigNo,
       thread's tst->arch.vex.guest_SC_CLASS.  Hence: */
 #  if defined(VGO_darwin)
    sres = VG_UCONTEXT_SYSCALL_SYSRES(uc, tst->arch.vex.guest_SC_CLASS);
+#  elif defined(VGO_gnu)
+   vg_assert(0);
 #  else
    sres = VG_UCONTEXT_SYSCALL_SYSRES(uc);
 #  endif
