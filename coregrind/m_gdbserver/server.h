@@ -126,7 +126,7 @@ extern ThreadId vgdb_interrupted_tid;
          VG_(debugLog) (level, "gdbsrv",__VA_ARGS__); }   \
    while (0)
 
-
+#if !defined(__VKI_GNU_H) // as vki-gnu.h defines it 
 /* vki only defines VKI_POLLIN but even not on all OS.
    Below is from linux bits/poll.h */
 #ifndef VKI_POLLIN
@@ -137,6 +137,7 @@ extern ThreadId vgdb_interrupted_tid;
 #define VKI_POLLERR           0x0008
 #define VKI_POLLHUP           0x0010
 #define VKI_POLLNVAL          0x0020
+#endif
 
 /* a bunch of macros to avoid libc usage in valgrind-ified gdbserver */ 
 #define strcmp(s1,s2)         VG_(strcmp) ((s1),(s2))
