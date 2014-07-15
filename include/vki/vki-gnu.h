@@ -229,6 +229,10 @@
 
 #include <fcntl.h>
 
+#define VKI_SEEK_SET    SEEK_SET
+#define VKI_SEEK_CUR    SEEK_CUR
+#define VKI_SEEK_END    SEEK_END
+
 #define VKI_O_RDONLY    	O_RDONLY
 #define VKI_O_WRONLY    	O_WRONLY
 #define VKI_O_RDWR      	O_RDWR
