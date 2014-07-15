@@ -446,10 +446,14 @@ void VG_(vg_yield)(void)
 
    VG_(release_BigLock)(tid, VgTs_Yielding, "VG_(vg_yield)");
 
+# if !defined(VGO_gnu)
    /* 
       Tell the kernel we're yielding.
     */
    VG_(do_syscall0)(__NR_sched_yield);
+# else
+   vg_assert(0);
+# endif
 
    VG_(acquire_BigLock)(tid, "VG_(vg_yield)");
 }
@@ -493,6 +497,8 @@ static void os_state_clear(ThreadState *tst)
    tst->os_state.remote_port       = 0;
    tst->os_state.msgh_id           = 0;
    VG_(memset)(&tst->os_state.mach_args, 0, sizeof(tst->os_state.mach_args));
+#  elif defined(VGO_gnu)
+   vg_assert(0);
 #  else
 #    error "Unknown OS"
 #  endif
