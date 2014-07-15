@@ -749,7 +749,13 @@ typedef  struct vki_sigaction_base  vki_sigaction_fromK_t;
 #define vki_ucontext ucontext
 
 
+#include<netinet/tcp.h>
 
+#define VKI_TCP_NODELAY TCP_NODELAY
+
+#include<nteinet/in.h>
+
+#define VKI_IPPROTO_TCP IPPROTO_TCP
 
 
 #endif
