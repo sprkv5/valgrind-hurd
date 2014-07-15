@@ -630,7 +630,7 @@ typedef  struct vki_sigaction_base  vki_sigaction_fromK_t;
 
 #define vki_pollfd pollfd
 
-#define VKI_POLLIN	VKI_POLLIN
+#define VKI_POLLIN	POLLIN
 #define VKI_POLLPRI	POLLPRI
 #define VKI_POLLOUT	POLLOUT
 
