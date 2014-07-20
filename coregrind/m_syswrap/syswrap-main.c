@@ -269,7 +269,7 @@
    implementations do attempt to return that, using the convention
    0 for success, or 0x8000 | error-code for failure.
 */
-#if defined(VGO_linux)
+#if defined(VGO_linux) || defined(VGO_gnu)
 extern
 UWord ML_(do_syscall_for_client_WRK)( Word syscallno, 
                                       void* guest_state,
@@ -307,7 +307,7 @@ void do_syscall_for_client ( Int syscallno,
 {
    vki_sigset_t saved;
    UWord err;
-#  if defined(VGO_linux)
+#  if defined(VGO_linux) || defined(VGO_gnu)
    err = ML_(do_syscall_for_client_WRK)(
             syscallno, &tst->arch.vex, 
             syscall_mask, &saved, sizeof(vki_sigset_t)
