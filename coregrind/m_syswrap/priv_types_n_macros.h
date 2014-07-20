@@ -129,7 +129,14 @@ typedef
       Int s_arg7;
       Int s_arg8;
 #     elif defined(VGP_x86_gnu)
-      vg_assert(0);
+      Int s_arg1;
+      Int s_arg2;
+      Int s_arg3;
+      Int s_arg4;
+      Int s_arg5;
+      Int s_arg6;
+      Int s_arg7;
+      Int s_arg8;
 #     else
 #       error "Unknown platform"
 #     endif
