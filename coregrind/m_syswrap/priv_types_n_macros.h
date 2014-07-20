@@ -128,6 +128,8 @@ typedef
       Int o_arg6;
       Int s_arg7;
       Int s_arg8;
+#     elif defined(VGP_x86_gnu)
+      vg_assert(0);
 #     else
 #       error "Unknown platform"
 #     endif
