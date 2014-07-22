@@ -137,6 +137,10 @@ typedef
       Int s_arg6;
       Int s_arg7;
       Int s_arg8;
+      Int s_arg9;
+      Int s_arg10;
+      Int s_arg11;
+      Int s_arg12;
 #     else
 #       error "Unknown platform"
 #     endif
@@ -208,6 +212,13 @@ SyscallTableEntry* ML_(get_linux_syscall_entry)( UInt sysno );
    fixed. */
 
 extern const SyscallTableEntry ML_(syscall_table)[];
+extern const UInt ML_(syscall_table_size);
+
+#elif defined(VGO_gnu)
+/* GNU also uses the scheme of exposing the table array(s)
+   and size(s). Sticking to this now. May chnage to Linux style.
+*/
+extern const SyscallTableEntry* ML_(syscall_table)[];
 extern const UInt ML_(syscall_table_size);
 
 #else
@@ -294,6 +305,8 @@ extern const UInt ML_(syscall_table_size);
 #elif defined(VGO_darwin)
 #  define GENX_(sysno, name)  WRAPPER_ENTRY_X_(generic, VG_DARWIN_SYSNO_INDEX(sysno), name)
 #  define GENXY(sysno, name)  WRAPPER_ENTRY_XY(generic, VG_DARWIN_SYSNO_INDEX(sysno), name)
+#elif defined(VGO_gnu)
+#  define GENX_(sysno, name)  WRAPPER_ENTRY_X(generic, vg_assert(0), name)
 #else
 #  error Unknown OS
 #endif
@@ -429,6 +442,21 @@ static inline UWord getERR ( SyscallStatus* st ) {
 #  define PRA6(s,t,a) PRRAn(6,s,t,a)
 #  define PRA7(s,t,a) PSRAn(7,s,t,a)
 #  define PRA8(s,t,a) PSRAn(8,s,t,a)
+
+#elif defined(VGP_x86_gnu)
+   /* Upto 12 parameters, all on the stack. */
+#  define PRA1(s,t,a) PSRAn(1,s,t,a)
+#  define PRA2(s,t,a) PSRAn(2,s,t,a)
+#  define PRA3(s,t,a) PSRAn(3,s,t,a)
+#  define PRA4(s,t,a) PSRAn(4,s,t,a)
+#  define PRA5(s,t,a) PSRAn(5,s,t,a)
+#  define PRA6(s,t,a) PSRAn(6,s,t,a)
+#  define PRA7(s,t,a) PSRAn(7,s,t,a)
+#  define PRA8(s,t,a) PSRAn(8,s,t,a)
+#  define PRA9(s,t,a) PSRAn(9,s,t,a)
+#  define PRA10(s,t,a) PSRAn(10,s,t,a)
+#  define PRA11(s,t,a) PSRAn(11,s,t,a)
+#  define PRA12(s,t,a) PSRAn(12,s,t,a)
 
 #else
 #  error Unknown platform
