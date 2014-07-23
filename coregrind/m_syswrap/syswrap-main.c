@@ -355,6 +355,7 @@ void do_syscall_for_client ( Int syscallno,
 static
 Bool eq_SyscallArgs ( SyscallArgs* a1, SyscallArgs* a2 )
 {
+#  if defined(VGO_gnu)
    return a1->sysno == a2->sysno
           && a1->arg1 == a2->arg1
           && a1->arg2 == a2->arg2
@@ -364,6 +365,21 @@ Bool eq_SyscallArgs ( SyscallArgs* a1, SyscallArgs* a2 )
           && a1->arg6 == a2->arg6
           && a1->arg7 == a2->arg7
           && a1->arg8 == a2->arg8;
+#  else
+   return a1->sysno == a2->sysno
+          && a1->arg1 == a2->arg1
+          && a1->arg2 == a2->arg2
+          && a1->arg3 == a2->arg3
+          && a1->arg4 == a2->arg4
+          && a1->arg5 == a2->arg5
+          && a1->arg6 == a2->arg6
+          && a1->arg7 == a2->arg7
+          && a1->arg8 == a2->arg8
+          && a1->arg9 == a2->arg9
+          && a1->arg10 == a2->arg10
+          && a1->arg11 == a2->arg11
+          && a1->arg12 == a2->arg12;
+#  endif
 }
 
 static
@@ -627,6 +643,49 @@ void getSyscallArgsFromGuestState ( /*OUT*/SyscallArgs*       canonical,
    canonical->arg6  = gst->guest_r7;
    canonical->arg7  = 0;
    canonical->arg8  = 0;
+
+#elif defined(VGP_x86_gnu)
+/* It's really guesswork - Copying the stack stuff used for x86 darwin */
+   VexGuestX86State* gst = (VexGuestX86State*)gst_vanilla;
+   UWord *stack = (UWord *)gst->guest_ESP;
+   // GrP fixme hope syscalls aren't called with really shallow stacks...
+   canonical->sysno = gst->guest_EAX;
+   if (canonical->sysno != 0) {
+      // stack[0] is return address
+      canonical->arg1  = stack[1];
+      canonical->arg2  = stack[2];
+      canonical->arg3  = stack[3];
+      canonical->arg4  = stack[4];
+      canonical->arg5  = stack[5];
+      canonical->arg6  = stack[6];
+      canonical->arg7  = stack[7];
+      canonical->arg8  = stack[8];
+      canonical->arg9  = stack[9];
+      canonical->arg10 = stack[10];
+      canonical->arg11 = stack[11];
+      //canonical->arg12 = stack[12]; we may not need this.
+   } else {
+      // GrP fixme hack handle syscall()
+      // GrP fixme what about __syscall() ?
+      // stack[0] is return address
+      // DDD: the tool can't see that the params have been shifted!  Can
+      //      lead to incorrect checking, I think, because the PRRAn/PSARn
+      //      macros will mention the pre-shifted args.
+      canonical->sysno = stack[1];
+      vg_assert(canonical->sysno != 0);
+      canonical->arg1  = stack[2];
+      canonical->arg2  = stack[3];
+      canonical->arg3  = stack[4];
+      canonical->arg4  = stack[5];
+      canonical->arg5  = stack[6];
+      canonical->arg6  = stack[7];
+      canonical->arg7  = stack[8];
+      canonical->arg8  = stack[9];
+      canonical->arg9  = stack[10];
+      canonical->arg10 = stack[11];
+      canonical->arg11 = stack[12];
+      //canonical->arg12 = stack[13]; we may not need this.
+   }
 #else
 #  error "getSyscallArgsFromGuestState: unknown arch"
 #endif
@@ -761,6 +820,28 @@ void putSyscallArgsIntoGuestState ( /*IN*/ SyscallArgs*       canonical,
    gst->guest_r7 = canonical->arg4;
    gst->guest_r8 = canonical->arg5;
    gst->guest_r9 = canonical->arg6;
+
+#elif defined(VGP_x86_gnu)
+   VexGuestX86State* gst = (VexGuestX86State*)gst_vanilla;
+   UWord *stack = (UWord *)gst->guest_ESP;
+
+   gst->guest_EAX =vg_assert(0);// get syno - VG_DARWIN_SYSNO_FOR_KERNEL(canonical->sysno);
+
+   // GrP fixme? gst->guest_TEMP_EFLAG_C = 0;
+   // stack[0] is return address
+   stack[1] = canonical->arg1;
+   stack[2] = canonical->arg2;
+   stack[3] = canonical->arg3;
+   stack[4] = canonical->arg4;
+   stack[5] = canonical->arg5;
+   stack[6] = canonical->arg6;
+   stack[7] = canonical->arg7;
+   stack[8] = canonical->arg8;
+   stack[9] = canonical->arg9;
+   stack[10] = canonical->arg10;
+   stack[11] = canonical->arg11;
+  // stack[12] = canonical->arg12;
+
 #else
 #  error "putSyscallArgsIntoGuestState: unknown arch"
 #endif
@@ -882,6 +963,12 @@ void getSyscallStatusFromGuestState ( /*OUT*/SyscallStatus*     canonical,
 #  elif defined(VGP_s390x_linux)
    VexGuestS390XState* gst   = (VexGuestS390XState*)gst_vanilla;
    canonical->sres = VG_(mk_SysRes_s390x_linux)( gst->guest_r2 );
+   canonical->what = SsComplete;
+
+#  if defined(VGP_x86_gnu)
+// VG_(mk_SysRes_x86_gnu) to be implemented/corrected
+   VexGuestX86State* gst = (VexGuestX86State*)gst_vanilla;
+   canonical->sres = VG_(mk_SysRes_x86_gnu)( gst->guest_EAX );
    canonical->what = SsComplete;
 
 #  else
