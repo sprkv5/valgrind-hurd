@@ -61,6 +61,12 @@ typedef
       UWord arg6;
       UWord arg7;
       UWord arg8;
+#  if defined(VGO_gnu)
+      UWord arg9;
+      UWord arg10;
+      UWord arg11;
+      UWord arg12;
+#  endif
    }
    SyscallArgs;
 
@@ -335,7 +341,12 @@ extern const UInt ML_(syscall_table_size);
 #define ARG6   (arrghs->arg6)
 #define ARG7   (arrghs->arg7)
 #define ARG8   (arrghs->arg8)
-
+#if defined(VGO_gnu)
+#  define ARG9  (arrghs->arg9)
+#  define ARG10 (arrghs->arg10)
+#  define ARG11 (arrghs->arg11)
+#  define ARG12 (arrghs->arg12)
+#endif
 /* Reference to the syscall's current result status/value.  General
    paranoia all round. */
 #define SUCCESS       (status->what == SsComplete && !sr_isError(status->sres))
@@ -648,6 +659,8 @@ static inline UWord getERR ( SyscallStatus* st ) {
 
 
 #define PRE_FIELD_READ(zzname, zzfield) \
+
+
     PRE_MEM_READ(zzname, (UWord)&zzfield, sizeof(zzfield))
 
 #define PRE_FIELD_WRITE(zzname, zzfield) \
