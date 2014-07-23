@@ -659,8 +659,6 @@ static inline UWord getERR ( SyscallStatus* st ) {
 
 
 #define PRE_FIELD_READ(zzname, zzfield) \
-
-
     PRE_MEM_READ(zzname, (UWord)&zzfield, sizeof(zzfield))
 
 #define PRE_FIELD_WRITE(zzname, zzfield) \
