@@ -2170,13 +2170,13 @@ void ML_(fixup_guest_state_to_restart_syscall) ( ThreadArchState* arch )
 
       vg_assert(p[0] == 0x00 && p[1] == 0x00 && p[2] == 0x00 && p[3] == 0x0c);
 
-#elif defined(VGO_gnu)
-      vg_assert(0);
-
 #     else
 #        error "Unknown endianness"
 #     endif
    }
+
+#elif defined(VGO_gnu)
+      vg_assert(0);
 
 #else
 #  error "ML_(fixup_guest_state_to_restart_syscall): unknown plat"
