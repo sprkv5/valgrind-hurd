@@ -47,7 +47,7 @@ valgrind_SOURCES = \
 endif
 if VGCONF_OS_IS_GNU
 valgrind_sources = \
-    launcher-gnu,c \
+    launcher-gnu.c \
     m_debuglog.c
 endif
 
