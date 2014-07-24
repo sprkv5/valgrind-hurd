@@ -825,7 +825,7 @@ void putSyscallArgsIntoGuestState ( /*IN*/ SyscallArgs*       canonical,
    VexGuestX86State* gst = (VexGuestX86State*)gst_vanilla;
    UWord *stack = (UWord *)gst->guest_ESP;
 
-   gst->guest_EAX =vg_assert(0);// get syno - VG_DARWIN_SYSNO_FOR_KERNEL(canonical->sysno);
+   gst->guest_EAX = canonical->sysno; // get sysno - may be incorrect;
 
    // GrP fixme? gst->guest_TEMP_EFLAG_C = 0;
    // stack[0] is return address
@@ -1170,6 +1170,9 @@ void putSyscallStatusIntoGuestState ( /*IN*/ ThreadId tid,
    VG_TRACK( post_reg_write, Vg_CoreSysCall, tid,
              OFFSET_mips64_r7, sizeof(UWord) );
 
+#  elif defined(VGO_gnu)
+   vg_assert(0);
+
 #  else
 #    error "putSyscallStatusIntoGuestState: unknown arch"
 #  endif
@@ -1293,6 +1296,23 @@ void getSyscallArgLayout ( /*OUT*/SyscallArgLayout* layout )
    layout->o_arg6   = OFFSET_s390x_r7;
    layout->uu_arg7  = -1; /* impossible value */
    layout->uu_arg8  = -1; /* impossible value */
+
+#elif defined(VGP_x86_gnu)
+   layout->o_sysno  = OFFSET_x86_EAX;
+   // syscall parameters are on stack in C convention
+   layout->s_arg1   = sizeof(UWord) * 1;
+   layout->s_arg2   = sizeof(UWord) * 2;
+   layout->s_arg3   = sizeof(UWord) * 3;
+   layout->s_arg4   = sizeof(UWord) * 4;
+   layout->s_arg5   = sizeof(UWord) * 5;
+   layout->s_arg6   = sizeof(UWord) * 6;
+   layout->s_arg7   = sizeof(UWord) * 7;
+   layout->s_arg8   = sizeof(UWord) * 8;
+   layout->s_arg9   = sizeof(UWord) * 9;
+   layout->s_arg10  = sizeof(UWord) * 10;
+   layout->s_arg11  = sizeof(UWord) * 11;
+   layout->s_arg12  = sizeof(UWord) * 12;
+
 #else
 #  error "getSyscallLayout: unknown arch"
 #endif
@@ -1360,6 +1380,8 @@ static const SyscallTableEntry* get_syscall_entry ( Int syscallno )
       break;
    }
 
+#  elif defined(VGO_gnu)
+   sys = ML_(get_gnu_traps_entry)(trapno); //or something similar to darwin
 #  else
 #    error Unknown OS
 #  endif
@@ -1534,11 +1556,15 @@ void VG_(client_syscall) ( ThreadId tid, UInt trc )
 
    /* It's sometimes useful, as a crude debugging hack, to get a
       stack trace at each (or selected) syscalls. */
+#  if !defined(VGO_gnu)
    if (0 && sysno == __NR_ioctl) {
       VG_(umsg)("\nioctl:\n");
       VG_(get_and_pp_StackTrace)(tid, 10);
       VG_(umsg)("\n");
    }
+#  else
+      vg_assert(0);
+#  endif
 
 #  if defined(VGO_darwin)
    /* Record syscall class.  But why?  Because the syscall might be
@@ -1941,7 +1967,7 @@ void VG_(post_syscall) (ThreadId tid)
 /* These are addresses within ML_(do_syscall_for_client_WRK).  See
    syscall-$PLAT.S for details. 
 */
-#if defined(VGO_linux)
+#if defined(VGO_linux) || defined(VGO_gnu) // gnu - implement syscall-$PLAT.S
   extern const Addr ML_(blksys_setup);
   extern const Addr ML_(blksys_restart);
   extern const Addr ML_(blksys_complete);
@@ -2142,6 +2168,10 @@ void ML_(fixup_guest_state_to_restart_syscall) ( ThreadArchState* arch )
                       (ULong)arch->vex.guest_PC, p[0], p[1], p[2], p[3]);
 
       vg_assert(p[0] == 0x00 && p[1] == 0x00 && p[2] == 0x00 && p[3] == 0x0c);
+
+#elif defined(VGO_gnu)
+      vg_assert(0);
+
 #     else
 #        error "Unknown endianness"
 #     endif
@@ -2212,7 +2242,7 @@ VG_(fixup_guest_state_after_syscall_interrupted)( ThreadId tid,
         in_complete_to_committed, // [3,4) in the .S files
         in_committed_to_finished; // [4,5) in the .S files
 
-#  if defined(VGO_linux)
+#  if defined(VGO_linux) || defined(VGO_gnu)
    outside_range
       = ip < ML_(blksys_setup) || ip >= ML_(blksys_finished);
    in_setup_to_restart
