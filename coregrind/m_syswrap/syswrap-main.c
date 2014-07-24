@@ -965,7 +965,7 @@ void getSyscallStatusFromGuestState ( /*OUT*/SyscallStatus*     canonical,
    canonical->sres = VG_(mk_SysRes_s390x_linux)( gst->guest_r2 );
    canonical->what = SsComplete;
 
-#  if defined(VGP_x86_gnu)
+#  elif defined(VGP_x86_gnu)
 // VG_(mk_SysRes_x86_gnu) to be implemented/corrected
    VexGuestX86State* gst = (VexGuestX86State*)gst_vanilla;
    canonical->sres = VG_(mk_SysRes_x86_gnu)( gst->guest_EAX );
