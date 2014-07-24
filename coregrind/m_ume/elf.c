@@ -28,7 +28,7 @@
    The GNU General Public License is contained in the file COPYING.
 */
 
-#if defined(VGO_linux)
+#if defined(VGO_linux) || defined(VGO_gnu)
 
 #include "pub_core_basics.h"
 #include "pub_core_vki.h"
