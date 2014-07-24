@@ -1381,7 +1381,7 @@ static const SyscallTableEntry* get_syscall_entry ( Int syscallno )
    }
 
 #  elif defined(VGO_gnu)
-   sys = ML_(get_gnu_traps_entry)(trapno); //or something similar to darwin
+   sys = ML_(get_gnu_traps_entry)(sysno); //or something similar to darwin
 #  else
 #    error Unknown OS
 #  endif
