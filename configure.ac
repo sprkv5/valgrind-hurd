@@ -644,7 +644,9 @@ AM_CONDITIONAL(VGCONF_ARCHS_INCLUDE_X86,
                test x$VGCONF_PLATFORM_PRI_CAPS = xX86_LINUX \
                  -o x$VGCONF_PLATFORM_SEC_CAPS = xX86_LINUX \
                  -o x$VGCONF_PLATFORM_PRI_CAPS = xX86_DARWIN \
-                 -o x$VGCONF_PLATFORM_SEC_CAPS = xX86_DARWIN )
+                 -o x$VGCONF_PLATFORM_SEC_CAPS = xX86_DARWIN \
+                 -o x$VGCONF_PLATFORM_PRI_CAPS = xX86_GNU \
+                 -o x$VGCONF_PLATFORM_SEC_CAPS = xX86_GNU )
 AM_CONDITIONAL(VGCONF_ARCHS_INCLUDE_AMD64, 
                test x$VGCONF_PLATFORM_PRI_CAPS = xAMD64_LINUX \
                  -o x$VGCONF_PLATFORM_PRI_CAPS = xAMD64_DARWIN )
@@ -690,6 +692,9 @@ AM_CONDITIONAL(VGCONF_PLATFORMS_INCLUDE_X86_DARWIN,
 AM_CONDITIONAL(VGCONF_PLATFORMS_INCLUDE_AMD64_DARWIN, 
                test x$VGCONF_PLATFORM_PRI_CAPS = xAMD64_DARWIN)
 
+AM_CONDITIONAL(VGCONF_PLATFORMS_INCLUDE_X86_GNU,
+               test x$VGCONF_PLATFORM_PRI_CAPS = xX86_GNU \
+                 -o x$VGCONF_PLATFORM_SEC_CAPS = xX86_GNU)
 
 # Similarly, set up VGCONF_OS_IS_<os>.  Exactly one of these becomes defined.
 # Relies on the assumption that the primary and secondary targets are 
@@ -707,6 +712,8 @@ AM_CONDITIONAL(VGCONF_OS_IS_DARWIN,
                test x$VGCONF_PLATFORM_PRI_CAPS = xX86_DARWIN \
                  -o x$VGCONF_PLATFORM_PRI_CAPS = xAMD64_DARWIN)
 
+AM_CONDITIONAL(VGCONF_OS_IS_GNU,
+               test x$VGCONF_PLATFORM_PRI_CAPS = xX86_GNU)
 
 # Sometimes, in the Makefile.am files, it's useful to know whether or not
 # there is a secondary target.
