@@ -248,7 +248,7 @@ int main(int argc, char** argv, char** envp)
       secondary build target.  Instead it's chosen to maximise the
       chances that /bin/sh will work on it. */
    if ((0==strcmp(VG_PLATFORM,"x86-gnu")) ||
-      ((0==strcmp(VG_PLATFORM,"amd64-gnu")))
+       (0==strcmp(VG_PLATFORM,"amd64-gnu")))
       default_platform = VG_PLATFORM;
    else
       barf("Unknown VG_PLATFORM '%s'", VG_PLATFORM);
