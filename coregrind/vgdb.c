@@ -90,7 +90,7 @@ I_die_here : (PTRACEINVOKER) architecture missing in vgdb.c
 /* Some darwin specific stuff is needed as ptrace is not
    fully supported on MacOS. Till we find someone courageous
    having access to Darwin, there is no PTRACEINVOKER. */
-#if defined(VGO_darwin)
+#if defined(VGO_darwin) || defined(VGO_gnu)
 #undef PTRACEINVOKER
 #endif
 
