@@ -465,9 +465,27 @@ static UInt local_sys_getpid ( void )
 }
 
 #elif defined(VGP_x86_gnu)
-static void a_funtion()
+/*
+We can't get away with vg_assert(0) here;
+maybe this isn't the scope of vg_assert().
+So just adding a skeleton version of 
+local_sys_write_stderr() and local_sys_getpid()
+functions.
+static void a_function()
 {
     vg_assert(0);
+}
+*/
+
+static UInt local_sys_write_stderr ( const HChar* buf, Int n )
+{
+   UInt __res;
+   return __res;
+}
+static UInt local_sys_getpid ( void )
+{
+   UInt __res;
+   return __res;
 }
 
 #else
