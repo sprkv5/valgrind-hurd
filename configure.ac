@@ -353,6 +353,24 @@ case "${host_os}" in
 	esac
         ;;
 
+     *gnu*)
+	AC_MSG_RESULT([ok (${host_os})])
+	VGCONF_OS="gnu"
+	AC_DEFINE([GNU_0_5], 000500, [GNU_KERN version value for GNU 0.5])
+
+        # Hm, this is gnu. Check the kernel version
+	AC_MSG_CHECKING([for the kernel version])
+
+	kernel=`uname -r`
+
+	case "${kernel}" in
+	     0.5)
+		  AC_MSG_RESULT([gnu (${kernel})])
+		  AC_DEFINE([GNU_KERN)], GNU_0_5, [Define GNU_KERN as 000500 if you're using GNU 0.5])
+		  ;;
+	esac
+        ;;
+
      *) 
 	AC_MSG_RESULT([no (${host_os})])
 	AC_MSG_ERROR([Valgrind is operating system specific. Sorry.])
@@ -592,6 +610,18 @@ case "$ARCH_MAX-$VGCONF_OS" in
         valt_load_address_sec_inner="0xUNSET"
         AC_MSG_RESULT([ok (${ARCH_MAX}-${VGCONF_OS})])
         ;;
+	 # x86-GNU CPU/OS combination; amd64-GNU can be added later.
+	 x86-gnu)
+		VGCONF_ARCH_PRI="x86"
+		VGCONF_ARCH_SEC=""
+	VGCONF_PLATFORM_PRI_CAPS="X86_GNU"
+	VGCONF_PLATFORM_SEC_CAPS=""
+		valt_load_address_pri_norml="0x38000000"
+		valt_load_address_pri_inner="0x28000000"
+		valt_load_address_sec_norml="0xUNSET"
+		valt_load_address_sec_inner="0xUNSET"
+		AC_MSG_RESULT([ok (${ARCH_MAX}-${VGCONF_OS})])
+		;;
     *)
         VGCONF_ARCH_PRI="unknown"
         VGCONF_ARCH_SEC="unknown"
@@ -614,7 +644,9 @@ AM_CONDITIONAL(VGCONF_ARCHS_INCLUDE_X86,
                test x$VGCONF_PLATFORM_PRI_CAPS = xX86_LINUX \
                  -o x$VGCONF_PLATFORM_SEC_CAPS = xX86_LINUX \
                  -o x$VGCONF_PLATFORM_PRI_CAPS = xX86_DARWIN \
-                 -o x$VGCONF_PLATFORM_SEC_CAPS = xX86_DARWIN )
+                 -o x$VGCONF_PLATFORM_SEC_CAPS = xX86_DARWIN \
+                 -o x$VGCONF_PLATFORM_PRI_CAPS = xX86_GNU \
+                 -o x$VGCONF_PLATFORM_SEC_CAPS = xX86_GNU )
 AM_CONDITIONAL(VGCONF_ARCHS_INCLUDE_AMD64, 
                test x$VGCONF_PLATFORM_PRI_CAPS = xAMD64_LINUX \
                  -o x$VGCONF_PLATFORM_PRI_CAPS = xAMD64_DARWIN )
@@ -660,6 +692,9 @@ AM_CONDITIONAL(VGCONF_PLATFORMS_INCLUDE_X86_DARWIN,
 AM_CONDITIONAL(VGCONF_PLATFORMS_INCLUDE_AMD64_DARWIN, 
                test x$VGCONF_PLATFORM_PRI_CAPS = xAMD64_DARWIN)
 
+AM_CONDITIONAL(VGCONF_PLATFORMS_INCLUDE_X86_GNU,
+               test x$VGCONF_PLATFORM_PRI_CAPS = xX86_GNU \
+                 -o x$VGCONF_PLATFORM_SEC_CAPS = xX86_GNU)
 
 # Similarly, set up VGCONF_OS_IS_<os>.  Exactly one of these becomes defined.
 # Relies on the assumption that the primary and secondary targets are 
@@ -677,6 +712,8 @@ AM_CONDITIONAL(VGCONF_OS_IS_DARWIN,
                test x$VGCONF_PLATFORM_PRI_CAPS = xX86_DARWIN \
                  -o x$VGCONF_PLATFORM_PRI_CAPS = xAMD64_DARWIN)
 
+AM_CONDITIONAL(VGCONF_OS_IS_GNU,
+               test x$VGCONF_PLATFORM_PRI_CAPS = xX86_GNU)
 
 # Sometimes, in the Makefile.am files, it's useful to know whether or not
 # there is a secondary target.
@@ -2873,6 +2910,8 @@ AC_CONFIG_FILES([coregrind/link_tool_exe_linux],
                 [chmod +x coregrind/link_tool_exe_linux])
 AC_CONFIG_FILES([coregrind/link_tool_exe_darwin],
                 [chmod +x coregrind/link_tool_exe_darwin])
+AC_CONFIG_FILES([coregrind/link_tool_exe_gnu],
+                [chmod +x coregrind/link_tool_exe_gnu])
 AC_OUTPUT
 
 cat<<EOF

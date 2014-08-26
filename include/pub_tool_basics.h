@@ -115,6 +115,8 @@ typedef  Word                 PtrdiffT;   // 32             64
 typedef Word                   OffT;      // 32             64
 #elif defined(VGO_darwin)
 typedef Long                   OffT;      // 64             64
+#elif defined(VGO_gnu)
+typedef Word                   OffT;      // 32             64
 #else
 #  error Unknown OS
 #endif
@@ -183,6 +185,13 @@ typedef
       SysResMode _mode;
    }
    SysRes;
+#elif defined(VGO_gnu)
+typedef
+   struct {
+      UWord _val;
+      Bool _isError;
+   }
+   SysRes;
 #else
 #  error "Unknown OS"
 #endif
@@ -249,6 +258,26 @@ static inline UWord sr_Err ( SysRes sr ) {
 static inline Bool sr_EQ ( SysRes sr1, SysRes sr2 ) {
    return sr1._mode == sr2._mode
           && sr1._wLO == sr2._wLO && sr1._wHI == sr2._wHI;
+}
+
+#elif defined(VGO_gnu)
+
+static inline Bool sr_isError ( SysRes sr ){
+   return sr._isError;
+}
+static inline UWord sr_Res ( SysRes sr ){
+   return sr._isError ? 0 : sr._val;
+}
+static inline UWord sr_ResHI ( SysRes sr ){
+   return 0;
+}
+static inline UWord sr_Err ( SysRes sr ){
+   return sr._isError ? sr._val : 0;
+}
+static inline Bool sr_EQ ( SysRes sr1, SysRes sr2 ){
+   return sr1._val == sr2._val 
+          && ((sr1._isError && sr2._isError) 
+              || (!sr1._isError && !sr2._isError));
 }
 
 #else

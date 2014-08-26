@@ -269,7 +269,7 @@
    implementations do attempt to return that, using the convention
    0 for success, or 0x8000 | error-code for failure.
 */
-#if defined(VGO_linux)
+#if defined(VGO_linux) || defined(VGO_gnu)
 extern
 UWord ML_(do_syscall_for_client_WRK)( Word syscallno, 
                                       void* guest_state,
@@ -307,7 +307,7 @@ void do_syscall_for_client ( Int syscallno,
 {
    vki_sigset_t saved;
    UWord err;
-#  if defined(VGO_linux)
+#  if defined(VGO_linux) || defined(VGO_gnu)
    err = ML_(do_syscall_for_client_WRK)(
             syscallno, &tst->arch.vex, 
             syscall_mask, &saved, sizeof(vki_sigset_t)
@@ -355,6 +355,7 @@ void do_syscall_for_client ( Int syscallno,
 static
 Bool eq_SyscallArgs ( SyscallArgs* a1, SyscallArgs* a2 )
 {
+#  if defined(VGO_gnu)
    return a1->sysno == a2->sysno
           && a1->arg1 == a2->arg1
           && a1->arg2 == a2->arg2
@@ -364,6 +365,21 @@ Bool eq_SyscallArgs ( SyscallArgs* a1, SyscallArgs* a2 )
           && a1->arg6 == a2->arg6
           && a1->arg7 == a2->arg7
           && a1->arg8 == a2->arg8;
+#  else
+   return a1->sysno == a2->sysno
+          && a1->arg1 == a2->arg1
+          && a1->arg2 == a2->arg2
+          && a1->arg3 == a2->arg3
+          && a1->arg4 == a2->arg4
+          && a1->arg5 == a2->arg5
+          && a1->arg6 == a2->arg6
+          && a1->arg7 == a2->arg7
+          && a1->arg8 == a2->arg8
+          && a1->arg9 == a2->arg9
+          && a1->arg10 == a2->arg10
+          && a1->arg11 == a2->arg11
+          && a1->arg12 == a2->arg12;
+#  endif
 }
 
 static
@@ -627,6 +643,49 @@ void getSyscallArgsFromGuestState ( /*OUT*/SyscallArgs*       canonical,
    canonical->arg6  = gst->guest_r7;
    canonical->arg7  = 0;
    canonical->arg8  = 0;
+
+#elif defined(VGP_x86_gnu)
+/* It's really guesswork - Copying the stack stuff used for x86 darwin */
+   VexGuestX86State* gst = (VexGuestX86State*)gst_vanilla;
+   UWord *stack = (UWord *)gst->guest_ESP;
+   // GrP fixme hope syscalls aren't called with really shallow stacks...
+   canonical->sysno = gst->guest_EAX;
+   if (canonical->sysno != 0) {
+      // stack[0] is return address
+      canonical->arg1  = stack[1];
+      canonical->arg2  = stack[2];
+      canonical->arg3  = stack[3];
+      canonical->arg4  = stack[4];
+      canonical->arg5  = stack[5];
+      canonical->arg6  = stack[6];
+      canonical->arg7  = stack[7];
+      canonical->arg8  = stack[8];
+      canonical->arg9  = stack[9];
+      canonical->arg10 = stack[10];
+      canonical->arg11 = stack[11];
+      //canonical->arg12 = stack[12]; we may not need this.
+   } else {
+      // GrP fixme hack handle syscall()
+      // GrP fixme what about __syscall() ?
+      // stack[0] is return address
+      // DDD: the tool can't see that the params have been shifted!  Can
+      //      lead to incorrect checking, I think, because the PRRAn/PSARn
+      //      macros will mention the pre-shifted args.
+      canonical->sysno = stack[1];
+      vg_assert(canonical->sysno != 0);
+      canonical->arg1  = stack[2];
+      canonical->arg2  = stack[3];
+      canonical->arg3  = stack[4];
+      canonical->arg4  = stack[5];
+      canonical->arg5  = stack[6];
+      canonical->arg6  = stack[7];
+      canonical->arg7  = stack[8];
+      canonical->arg8  = stack[9];
+      canonical->arg9  = stack[10];
+      canonical->arg10 = stack[11];
+      canonical->arg11 = stack[12];
+      //canonical->arg12 = stack[13]; we may not need this.
+   }
 #else
 #  error "getSyscallArgsFromGuestState: unknown arch"
 #endif
@@ -761,6 +820,28 @@ void putSyscallArgsIntoGuestState ( /*IN*/ SyscallArgs*       canonical,
    gst->guest_r7 = canonical->arg4;
    gst->guest_r8 = canonical->arg5;
    gst->guest_r9 = canonical->arg6;
+
+#elif defined(VGP_x86_gnu)
+   VexGuestX86State* gst = (VexGuestX86State*)gst_vanilla;
+   UWord *stack = (UWord *)gst->guest_ESP;
+
+   gst->guest_EAX = canonical->sysno; // get sysno - may be incorrect;
+
+   // GrP fixme? gst->guest_TEMP_EFLAG_C = 0;
+   // stack[0] is return address
+   stack[1] = canonical->arg1;
+   stack[2] = canonical->arg2;
+   stack[3] = canonical->arg3;
+   stack[4] = canonical->arg4;
+   stack[5] = canonical->arg5;
+   stack[6] = canonical->arg6;
+   stack[7] = canonical->arg7;
+   stack[8] = canonical->arg8;
+   stack[9] = canonical->arg9;
+   stack[10] = canonical->arg10;
+   stack[11] = canonical->arg11;
+  // stack[12] = canonical->arg12;
+
 #else
 #  error "putSyscallArgsIntoGuestState: unknown arch"
 #endif
@@ -882,6 +963,12 @@ void getSyscallStatusFromGuestState ( /*OUT*/SyscallStatus*     canonical,
 #  elif defined(VGP_s390x_linux)
    VexGuestS390XState* gst   = (VexGuestS390XState*)gst_vanilla;
    canonical->sres = VG_(mk_SysRes_s390x_linux)( gst->guest_r2 );
+   canonical->what = SsComplete;
+
+#  elif defined(VGP_x86_gnu)
+// VG_(mk_SysRes_x86_gnu) to be implemented/corrected
+   VexGuestX86State* gst = (VexGuestX86State*)gst_vanilla;
+   canonical->sres = VG_(mk_SysRes_x86_gnu)( gst->guest_EAX );
    canonical->what = SsComplete;
 
 #  else
@@ -1083,6 +1170,9 @@ void putSyscallStatusIntoGuestState ( /*IN*/ ThreadId tid,
    VG_TRACK( post_reg_write, Vg_CoreSysCall, tid,
              OFFSET_mips64_r7, sizeof(UWord) );
 
+#  elif defined(VGO_gnu)
+   vg_assert(0);
+
 #  else
 #    error "putSyscallStatusIntoGuestState: unknown arch"
 #  endif
@@ -1206,6 +1296,23 @@ void getSyscallArgLayout ( /*OUT*/SyscallArgLayout* layout )
    layout->o_arg6   = OFFSET_s390x_r7;
    layout->uu_arg7  = -1; /* impossible value */
    layout->uu_arg8  = -1; /* impossible value */
+
+#elif defined(VGP_x86_gnu)
+   layout->o_sysno  = OFFSET_x86_EAX;
+   // syscall parameters are on stack in C convention
+   layout->s_arg1   = sizeof(UWord) * 1;
+   layout->s_arg2   = sizeof(UWord) * 2;
+   layout->s_arg3   = sizeof(UWord) * 3;
+   layout->s_arg4   = sizeof(UWord) * 4;
+   layout->s_arg5   = sizeof(UWord) * 5;
+   layout->s_arg6   = sizeof(UWord) * 6;
+   layout->s_arg7   = sizeof(UWord) * 7;
+   layout->s_arg8   = sizeof(UWord) * 8;
+   layout->s_arg9   = sizeof(UWord) * 9;
+   layout->s_arg10  = sizeof(UWord) * 10;
+   layout->s_arg11  = sizeof(UWord) * 11;
+   layout->s_arg12  = sizeof(UWord) * 12;
+
 #else
 #  error "getSyscallLayout: unknown arch"
 #endif
@@ -1273,6 +1380,9 @@ static const SyscallTableEntry* get_syscall_entry ( Int syscallno )
       break;
    }
 
+#  elif defined(VGO_gnu)
+   vg_assert(0);
+   //sys = ML_(get_gnu_traps_entry)(sysno); //or something similar to darwin
 #  else
 #    error Unknown OS
 #  endif
@@ -1447,11 +1557,15 @@ void VG_(client_syscall) ( ThreadId tid, UInt trc )
 
    /* It's sometimes useful, as a crude debugging hack, to get a
       stack trace at each (or selected) syscalls. */
+#  if !defined(VGO_gnu)
    if (0 && sysno == __NR_ioctl) {
       VG_(umsg)("\nioctl:\n");
       VG_(get_and_pp_StackTrace)(tid, 10);
       VG_(umsg)("\n");
    }
+#  else
+      vg_assert(0);
+#  endif
 
 #  if defined(VGO_darwin)
    /* Record syscall class.  But why?  Because the syscall might be
@@ -1854,7 +1968,7 @@ void VG_(post_syscall) (ThreadId tid)
 /* These are addresses within ML_(do_syscall_for_client_WRK).  See
    syscall-$PLAT.S for details. 
 */
-#if defined(VGO_linux)
+#if defined(VGO_linux) || defined(VGO_gnu) // gnu - implement syscall-$PLAT.S
   extern const Addr ML_(blksys_setup);
   extern const Addr ML_(blksys_restart);
   extern const Addr ML_(blksys_complete);
@@ -2055,10 +2169,14 @@ void ML_(fixup_guest_state_to_restart_syscall) ( ThreadArchState* arch )
                       (ULong)arch->vex.guest_PC, p[0], p[1], p[2], p[3]);
 
       vg_assert(p[0] == 0x00 && p[1] == 0x00 && p[2] == 0x00 && p[3] == 0x0c);
+
 #     else
 #        error "Unknown endianness"
 #     endif
    }
+
+#elif defined(VGO_gnu)
+      vg_assert(0);
 
 #else
 #  error "ML_(fixup_guest_state_to_restart_syscall): unknown plat"
@@ -2125,7 +2243,7 @@ VG_(fixup_guest_state_after_syscall_interrupted)( ThreadId tid,
         in_complete_to_committed, // [3,4) in the .S files
         in_committed_to_finished; // [4,5) in the .S files
 
-#  if defined(VGO_linux)
+#  if defined(VGO_linux) || defined(VGO_gnu)
    outside_range
       = ip < ML_(blksys_setup) || ip >= ML_(blksys_finished);
    in_setup_to_restart

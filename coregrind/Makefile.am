@@ -45,6 +45,11 @@ valgrind_SOURCES = \
 	launcher-darwin.c \
 	m_debuglog.c
 endif
+if VGCONF_OS_IS_GNU
+valgrind_SOURCES = \
+    launcher-gnu.c \
+    m_debuglog.c
+endif
 
 valgrind_CPPFLAGS  = $(AM_CPPFLAGS_PRI)
 valgrind_CFLAGS    = $(AM_CFLAGS_PRI)

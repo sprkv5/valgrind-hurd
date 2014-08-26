@@ -98,6 +98,11 @@
 #  define VG_ELF_MACHINE      EM_MIPS
 #  define VG_ELF_CLASS        ELFCLASS64
 #  undef  VG_PLAT_USES_PPCTOC
+#elif defined(VGP_x86_gnu)
+#  define VG_ELF_DATA2XXX     ELFDATA2LSB
+#  define VG_ELF_MACHINE      EM_386
+#  define VG_ELF_CLASS        ELFCLASS32
+#  undef  VG_PLAT_USES_PPCTOC
 #else
 #  error Unknown platform
 #endif

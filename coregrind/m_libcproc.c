@@ -66,7 +66,7 @@ HChar** VG_(client_envp) = NULL;
 const HChar *VG_(libdir) = VG_LIBDIR;
 
 const HChar *VG_(LD_PRELOAD_var_name) =
-#if defined(VGO_linux)
+#if defined(VGO_linux) || defined(VGO_gnu) //Assuming linux similarity
    "LD_PRELOAD";
 #elif defined(VGO_darwin)
    "DYLD_INSERT_LIBRARIES";
@@ -291,6 +291,8 @@ Int VG_(waitpid)(Int pid, Int *status, Int options)
    SysRes res = VG_(do_syscall4)(__NR_wait4_nocancel,
                                  pid, (UWord)status, options, 0);
    return sr_isError(res) ? -1 : sr_Res(res);
+#  elif defined(VGO_gnu)
+   vg_assert(0);
 #  else
 #    error Unknown OS
 #  endif
@@ -326,6 +328,9 @@ HChar **VG_(env_clone) ( HChar **oldenv )
 
 void VG_(execv) ( const HChar* filename, HChar** argv )
 {
+#  if defined(VGO_gnu)
+     vg_assert(0);
+#  elif defined(VGO_linux) || defined(VGO_darwin)
    HChar** envp;
    SysRes res;
 
@@ -339,6 +344,7 @@ void VG_(execv) ( const HChar* filename, HChar** argv )
                           (UWord)filename, (UWord)argv, (UWord)envp);
 
    VG_(printf)("EXEC failed, errno = %lld\n", (Long)sr_Err(res));
+#  endif
 }
 
 /* Return -1 if error, else 0.  NOTE does not indicate return code of
@@ -398,6 +404,9 @@ Int VG_(system) ( const HChar* cmd )
 /* Support for getrlimit. */
 Int VG_(getrlimit) (Int resource, struct vki_rlimit *rlim)
 {
+#  if defined(VGO_gnu)
+     vg_assert(0);
+#  elif defined(VGO_linux) || defined(VGO_darwin)
    SysRes res = VG_(mk_SysRes_Error)(VKI_ENOSYS);
    /* res = getrlimit( resource, rlim ); */
 #  ifdef __NR_ugetrlimit
@@ -406,16 +415,21 @@ Int VG_(getrlimit) (Int resource, struct vki_rlimit *rlim)
    if (sr_isError(res) && sr_Err(res) == VKI_ENOSYS)
       res = VG_(do_syscall2)(__NR_getrlimit, resource, (UWord)rlim);
    return sr_isError(res) ? -1 : sr_Res(res);
+#  endif
 }
 
 
 /* Support for setrlimit. */
 Int VG_(setrlimit) (Int resource, const struct vki_rlimit *rlim)
 {
+#  if defined(VGO_gnu)
+     vg_assert(0);
+#  elif defined(VGO_linux) || defined(VGO_darwin)
    SysRes res;
    /* res = setrlimit( resource, rlim ); */
    res = VG_(do_syscall2)(__NR_setrlimit, resource, (UWord)rlim);
    return sr_isError(res) ? -1 : sr_Res(res);
+#  endif
 }
 
 /* Support for prctl. */
@@ -479,6 +493,9 @@ Int VG_(gettid)(void)
    // Use Mach thread ports for lwpid instead.
    return mach_thread_self();
 
+#  elif defined(VGO_gnu)
+     vg_assert(0);
+
 #  else
 #    error "Unknown OS"
 #  endif
@@ -487,24 +504,39 @@ Int VG_(gettid)(void)
 /* You'd be amazed how many places need to know the current pid. */
 Int VG_(getpid) ( void )
 {
+#  if defined(VGO_gnu)
+     vg_assert(0);
+#  elif defined(VGO_linux) || defined(VGO_darwin)
    /* ASSUMES SYSCALL ALWAYS SUCCEEDS */
    return sr_Res( VG_(do_syscall0)(__NR_getpid) );
+#  endif
 }
 
 Int VG_(getpgrp) ( void )
 {
+#  if defined(VGO_gnu)
+     vg_assert(0);
+#  elif defined(VGO_linux) || defined(VGO_darwin)
    /* ASSUMES SYSCALL ALWAYS SUCCEEDS */
    return sr_Res( VG_(do_syscall0)(__NR_getpgrp) );
+#  endif
 }
 
 Int VG_(getppid) ( void )
 {
+#  if defined(VGO_gnu)
+     vg_assert(0);
+#  elif defined(VGO_linux) || defined(VGO_darwin)
    /* ASSUMES SYSCALL ALWAYS SUCCEEDS */
    return sr_Res( VG_(do_syscall0)(__NR_getppid) );
+#  endif
 }
 
 Int VG_(geteuid) ( void )
 {
+#  if defined(VGO_gnu)
+     vg_assert(0);
+#  elif defined(VGO_linux) || defined(VGO_darwin)
    /* ASSUMES SYSCALL ALWAYS SUCCEEDS */
 #  if defined(__NR_geteuid32)
    // We use the 32-bit version if it's supported.  Otherwise, IDs greater
@@ -513,10 +545,14 @@ Int VG_(geteuid) ( void )
 #  else
    return sr_Res( VG_(do_syscall0)(__NR_geteuid) );
 #  endif
+#  endif
 }
 
 Int VG_(getegid) ( void )
 {
+#  if defined(VGO_gnu)
+     vg_assert(0);
+#  elif defined(VGO_linux) || defined(VGO_darwin)
    /* ASSUMES SYSCALL ALWAYS SUCCEEDS */
 #  if defined(__NR_getegid32)
    // We use the 32-bit version if it's supported.  Otherwise, IDs greater
@@ -524,6 +560,7 @@ Int VG_(getegid) ( void )
    return sr_Res( VG_(do_syscall0)(__NR_getegid32) );
 #  else
    return sr_Res( VG_(do_syscall0)(__NR_getegid) );
+#  endif
 #  endif
 }
 
@@ -559,6 +596,9 @@ Int VG_(getgroups)( Int size, UInt* list )
       return -1;
    return sr_Res(sres);
 
+#  elif defined(VGO_gnu)
+     vg_assert(0);
+
 #  else
 #     error "VG_(getgroups): needs implementation on this platform"
 #  endif
@@ -570,11 +610,15 @@ Int VG_(getgroups)( Int size, UInt* list )
 
 Int VG_(ptrace) ( Int request, Int pid, void *addr, void *data )
 {
+#  if defined(VGO_gnu)
+     vg_assert(0);
+#  elif defined(VGO_linux) || (VGO_darwin)
    SysRes res;
    res = VG_(do_syscall4)(__NR_ptrace, request, pid, (UWord)addr, (UWord)data);
    if (sr_isError(res))
       return -1;
    return sr_Res(res);
+#  endif
 }
 
 /* ---------------------------------------------------------------------
@@ -600,6 +644,9 @@ Int VG_(fork) ( void )
       return 0;  /* this is child: return 0 instead of child pid */
    }
    return sr_Res(res);
+
+#  elif defined(VGO_gnu)
+     vg_assert(0);
 
 #  else
 #    error "Unknown OS"
@@ -642,6 +689,9 @@ UInt VG_(read_millisecond_timer) ( void )
      vg_assert(! sr_isError(res));
      now = sr_Res(res) * 1000000ULL + sr_ResHI(res);
    }
+
+#  elif defined(VGO_gnu)
+     vg_assert(0);
 
 #  else
 #    error "Unknown OS"

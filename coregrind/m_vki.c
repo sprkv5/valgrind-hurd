@@ -77,7 +77,8 @@ void VG_(vki_do_initial_consistency_checks) ( void )
 
 #  if defined(VGO_linux)
    /* nothing to check */
-#  elif defined(VGP_x86_darwin) || defined(VGP_amd64_darwin)
+#  elif defined(VGP_x86_darwin) || defined(VGP_amd64_darwin)  \
+        || defined(VGP_x86_gnu) //gnu bypass
    vg_assert(_VKI_NSIG == NSIG);
    vg_assert(_VKI_NSIG == 32);
    vg_assert(_VKI_NSIG_WORDS == 1);
@@ -89,7 +90,7 @@ void VG_(vki_do_initial_consistency_checks) ( void )
 
    /* --- Platform-specific checks on sigactions --- */
 
-#  if defined(VGO_linux)
+#  if defined(VGO_linux) || defined(VGO_gnu) //gnu bypass
    /* the toK- and fromK- forms are identical */
    vg_assert( sizeof(vki_sigaction_toK_t) 
               == sizeof(vki_sigaction_fromK_t) );

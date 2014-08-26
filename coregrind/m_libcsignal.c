@@ -174,6 +174,9 @@ void VG_(sigcomplementset)( vki_sigset_t* dst, vki_sigset_t* src )
 */
 Int VG_(sigprocmask)( Int how, const vki_sigset_t* set, vki_sigset_t* oldset)
 {
+#  if defined(VGO_gnu)
+     vg_assert(0);
+#  else
 #  if defined(VGO_linux)
 #  if defined(__NR_rt_sigprocmask)
    SysRes res = VG_(do_syscall4)(__NR_rt_sigprocmask, 
@@ -194,6 +197,7 @@ Int VG_(sigprocmask)( Int how, const vki_sigset_t* set, vki_sigset_t* oldset)
 #    error "Unknown OS"
 #  endif
    return sr_isError(res) ? -1 : 0;
+#  endif
 }
 
 
@@ -272,6 +276,9 @@ Int VG_(sigaction) ( Int signum,
    }
    return sr_isError(res) ? -1 : 0;
 
+#  elif defined(VGO_gnu)
+      vg_assert(0);
+
 #  else
 #    error "Unsupported OS"
 #  endif
@@ -290,6 +297,12 @@ VG_(convert_sigaction_fromK_to_toK)( vki_sigaction_fromK_t* fromK,
    toK->sa_tramp    = NULL; /* the cause of all the difficulty */
    toK->sa_mask     = fromK->sa_mask;
    toK->sa_flags    = fromK->sa_flags;
+#  elif defined(VGO_gnu)
+//   vg_assert(0);
+//   toK->ksahandler  = fromK->ksa_handler;
+//   toK->ksa_sigaction=fromK->ksa_sigaction;
+//   toK->sa_mask     = fromK->sa_mask;
+//   toK->sa_flags    = fromK->sa_flags;
 #  else
 #    error "Unsupported OS"
 #  endif
@@ -298,6 +311,10 @@ VG_(convert_sigaction_fromK_to_toK)( vki_sigaction_fromK_t* fromK,
 
 Int VG_(kill)( Int pid, Int signo )
 {
+#  if defined(VGO_gnu)
+     vg_assert(0);
+#  else
+
 #  if defined(VGO_linux)
    SysRes res = VG_(do_syscall2)(__NR_kill, pid, signo);
 #  elif defined(VGO_darwin)
@@ -307,6 +324,7 @@ Int VG_(kill)( Int pid, Int signo )
 #    error "Unsupported OS"
 #  endif
    return sr_isError(res) ? -1 : 0;
+#  endif
 }
 
 Int VG_(tkill)( Int lwpid, Int signo )
@@ -323,6 +341,9 @@ Int VG_(tkill)( Int lwpid, Int signo )
    SysRes res;
    res = VG_(do_syscall2)(__NR___pthread_kill, lwpid, signo);
    return sr_isError(res) ? -1 : 0;
+
+#  elif defined(VGO_gnu)
+   vg_assert(0);
 
 #  else
 #    error "Unsupported plat"
@@ -477,6 +498,11 @@ Int VG_(sigtimedwait_zero)( const vki_sigset_t *set,
   return i;
 }
 
+#elif defined(VGO_gnu)
+static void afunction()
+{
+  vg_assert(0);
+}
 #else
 #  error "Unknown OS"
 #endif

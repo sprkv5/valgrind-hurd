@@ -202,6 +202,11 @@
         (srP)->misc.MIPS64.r31 = (ULong)ra;               \
         (srP)->misc.MIPS64.r28 = (ULong)gp;               \
       }
+#elif defined(VGP_x86_gnu)
+   static void a_function()
+      {
+        vg_assert(0);
+      }
 #else
 #  error Unknown platform
 #endif
@@ -215,6 +220,8 @@ void VG_(exit)( Int status )
    (void)VG_(do_syscall1)(__NR_exit_group, status );
 #elif defined(VGO_darwin)
    (void)VG_(do_syscall1)(__NR_exit, status );
+#elif defined(VGO_gnu)
+   vg_assert(0);
 #else
 #  error Unknown OS
 #endif

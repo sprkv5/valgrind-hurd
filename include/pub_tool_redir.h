@@ -249,6 +249,9 @@
 #elif defined(VGO_darwin) && (DARWIN_VERS >= DARWIN_10_7)
 #  define  VG_Z_LIBC_SONAME  libsystemZucZaZddylib   // libsystem_c*.dylib
 
+#elif defined(VGO_gnu)
+#  define  VG_Z_LIBC_SONAME libxZdsoZa               // assuming linux one
+
 #else
 #  error "Unknown platform"
 
@@ -265,6 +268,8 @@
 #  define  VG_Z_LIBPTHREAD_SONAME  libpthreadZdsoZd0     // libpthread.so.0
 #elif defined(VGO_darwin)
 #  define  VG_Z_LIBPTHREAD_SONAME  libSystemZdZaZddylib  // libSystem.*.dylib
+#elif defined(VGO_gnu)
+#  define  VG_Z_LIBPTHREAD_SONAME libpthreadZdsoZd0Zd3   // libpthread.so.0.3
 #else
 #  error "Unknown platform"
 #endif
@@ -299,6 +304,12 @@
 
 #endif
 
+#if defined(VGO_gnu)
+
+#define VG_Z_LD_SO_1            ldZdsoZd1               // ld.so.1
+#define VG_U_LD_SO_1            "ldZdsoZd1"
+
+#endif
 
 // Prefix for synonym soname synonym handling
 #define VG_SO_SYN(name)       VgSoSyn##name

@@ -1585,6 +1585,8 @@ Vg_FnNameKind VG_(get_fnname_kind) ( HChar* name )
 #      elif defined(VGO_darwin)
        // See readmacho.c for an explanation of this.
        VG_STREQ("start_according_to_valgrind", name) ||  // Darwin, darling
+#      elif defined(VGO_gnu)
+       VG_STREQ("__libc_start_main",  name) ||  // glibc glibnesss
 #      else
 #        error "Unknown OS"
 #      endif

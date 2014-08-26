@@ -1135,10 +1135,121 @@ VG_(trampoline_stuff_end):
 #	undef UD2_1024
 #	undef UD2_PAGE
 
+/*---------------------- x86-gnu ----------------------*/
+#else
+#if defined(VGP_x86_gnu)
+
+/* Since, there's no vg_assert(0) and I just need to get the
+ * binary linked, to bupass the compiler I copied the VGPx86-linux
+ * stuff :( */
+
+#   define UD2_16     ud2 ; ud2 ; ud2 ; ud2 ;ud2 ; ud2 ; ud2 ; ud2
+#   define UD2_64     UD2_16   ; UD2_16   ; UD2_16   ; UD2_16
+#   define UD2_256    UD2_64   ; UD2_64   ; UD2_64   ; UD2_64
+#   define UD2_1024   UD2_256  ; UD2_256  ; UD2_256  ; UD2_256
+#   define UD2_PAGE   UD2_1024 ; UD2_1024 ; UD2_1024 ; UD2_1024  
+
+    /* a leading page of unexecutable code */
+    UD2_PAGE
+
+.global VG_(trampoline_stuff_start)
+VG_(trampoline_stuff_start):
+
+.global VG_(x86_linux_SUBST_FOR_sigreturn)
+VG_(x86_linux_SUBST_FOR_sigreturn):
+        /* This is a very specific sequence which GDB uses to
+           recognize signal handler frames.  Also gcc: see
+           x86_fallback_frame_state() in
+           gcc-4.1.0/gcc/config/i386/linux-unwind.h */
+        popl    %eax
+        movl    $ __NR_sigreturn, %eax
+        int     $0x80
+        ud2
+
+.global VG_(x86_linux_SUBST_FOR_rt_sigreturn)
+VG_(x86_linux_SUBST_FOR_rt_sigreturn):
+        /* Likewise for rt signal frames */
+        movl    $ __NR_rt_sigreturn, %eax
+        int     $0x80
+        ud2
+
+/* There's no particular reason that this needs to be handwritten
+   assembly, but since that's what this file contains, here's a
+   simple index implementation (written in C and compiled by gcc.)
+
+   unsigned char* REDIR_FOR_index ( const char* s, int c ) 
+   { 
+      unsigned char* p  = (unsigned char*)s; 
+      while (1) { 
+         if (*p == ch) return p;
+         if (*p == 0)  return 0; 
+         p++; 
+      } 
+   }
+*/
+.global VG_(x86_linux_REDIR_FOR_index)
+.type   VG_(x86_linux_REDIR_FOR_index), @function
+VG_(x86_linux_REDIR_FOR_index):
+        pushl   %ebp
+        movl    %esp, %ebp
+        movl    8(%ebp), %eax
+        movzbl  12(%ebp), %ecx
+        movzbl  (%eax), %edx
+        cmpb    %dl, %cl
+        jne     .L9
+        jmp     .L2
+.L11:
+        addl    $1, %eax
+        movzbl  (%eax), %edx
+        cmpb    %dl, %cl
+        je      .L2
+.L9:
+        testb   %dl, %dl
+        jne     .L11
+        xorl    %eax, %eax
+.L2:
+        popl    %ebp
+        ret
+.size VG_(x86_linux_REDIR_FOR_index), .-VG_(x86_linux_REDIR_FOR_index)
+
+/* There's no particular reason that this needs to be handwritten
+   assembly, but since that's what this file contains, here's a
+   simple strlen implementation (written in C and compiled by gcc.)
+*/
+.global VG_(x86_linux_REDIR_FOR_strlen)
+.type   VG_(x86_linux_REDIR_FOR_strlen), @function
+VG_(x86_linux_REDIR_FOR_strlen):
+        pushl   %ebp
+        movl    %esp, %ebp
+        movl    8(%ebp), %edx
+        movl    %edx, %eax
+        jmp     2f
+1:      incl    %eax
+2:      cmpb    $0, (%eax)
+        jne     1b
+        subl    %edx, %eax
+        popl    %ebp
+        ret
+.size VG_(x86_linux_REDIR_FOR_strlen), .-VG_(x86_linux_REDIR_FOR_strlen)
+
+
+.global VG_(trampoline_stuff_end)
+VG_(trampoline_stuff_end):
+
+    /* and a trailing page of unexecutable code */
+    UD2_PAGE
+
+#   undef UD2_16
+#   undef UD2_64
+#   undef UD2_256
+#   undef UD2_1024
+#   undef UD2_PAGE
+
 /*---------------- unknown ----------------*/
 #else
 #  error Unknown platform
 
+#endif
 #endif
 #endif
 #endif

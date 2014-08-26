@@ -398,7 +398,8 @@ static Long read_leb128S( UChar **data )
 static Bool get_Dwarf_Reg( /*OUT*/Addr* a, Word regno, RegSummary* regs )
 {
    vg_assert(regs);
-#  if defined(VGP_x86_linux) || defined(VGP_x86_darwin)
+#  if defined(VGP_x86_linux) || defined(VGP_x86_darwin)  \
+      || defined(VGP_x86_gnu)                            // Assuming Linux like
    if (regno == 5/*EBP*/) { *a = regs->fp; return True; }
    if (regno == 4/*ESP*/) { *a = regs->sp; return True; }
 #  elif defined(VGP_amd64_linux) || defined(VGP_amd64_darwin)

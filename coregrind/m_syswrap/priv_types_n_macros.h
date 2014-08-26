@@ -61,6 +61,12 @@ typedef
       UWord arg6;
       UWord arg7;
       UWord arg8;
+#  if defined(VGO_gnu)
+      UWord arg9;
+      UWord arg10;
+      UWord arg11;
+      UWord arg12;
+#  endif
    }
    SyscallArgs;
 
@@ -128,6 +134,19 @@ typedef
       Int o_arg6;
       Int s_arg7;
       Int s_arg8;
+#     elif defined(VGP_x86_gnu)
+      Int s_arg1;
+      Int s_arg2;
+      Int s_arg3;
+      Int s_arg4;
+      Int s_arg5;
+      Int s_arg6;
+      Int s_arg7;
+      Int s_arg8;
+      Int s_arg9;
+      Int s_arg10;
+      Int s_arg11;
+      Int s_arg12;
 #     else
 #       error "Unknown platform"
 #     endif
@@ -199,6 +218,13 @@ SyscallTableEntry* ML_(get_linux_syscall_entry)( UInt sysno );
    fixed. */
 
 extern const SyscallTableEntry ML_(syscall_table)[];
+extern const UInt ML_(syscall_table_size);
+
+#elif defined(VGO_gnu)
+/* GNU also uses the scheme of exposing the table array(s)
+   and size(s). Sticking to this now. May chnage to Linux style.
+*/
+extern const SyscallTableEntry* ML_(syscall_table)[];
 extern const UInt ML_(syscall_table_size);
 
 #else
@@ -285,6 +311,8 @@ extern const UInt ML_(syscall_table_size);
 #elif defined(VGO_darwin)
 #  define GENX_(sysno, name)  WRAPPER_ENTRY_X_(generic, VG_DARWIN_SYSNO_INDEX(sysno), name)
 #  define GENXY(sysno, name)  WRAPPER_ENTRY_XY(generic, VG_DARWIN_SYSNO_INDEX(sysno), name)
+#elif defined(VGO_gnu)
+#  define GENX_(sysno, name)  WRAPPER_ENTRY_X(generic, vg_assert(0), name)
 #else
 #  error Unknown OS
 #endif
@@ -313,7 +341,12 @@ extern const UInt ML_(syscall_table_size);
 #define ARG6   (arrghs->arg6)
 #define ARG7   (arrghs->arg7)
 #define ARG8   (arrghs->arg8)
-
+#if defined(VGO_gnu)
+#  define ARG9  (arrghs->arg9)
+#  define ARG10 (arrghs->arg10)
+#  define ARG11 (arrghs->arg11)
+#  define ARG12 (arrghs->arg12)
+#endif
 /* Reference to the syscall's current result status/value.  General
    paranoia all round. */
 #define SUCCESS       (status->what == SsComplete && !sr_isError(status->sres))
@@ -420,6 +453,21 @@ static inline UWord getERR ( SyscallStatus* st ) {
 #  define PRA6(s,t,a) PRRAn(6,s,t,a)
 #  define PRA7(s,t,a) PSRAn(7,s,t,a)
 #  define PRA8(s,t,a) PSRAn(8,s,t,a)
+
+#elif defined(VGP_x86_gnu)
+   /* Upto 12 parameters, all on the stack. */
+#  define PRA1(s,t,a) PSRAn(1,s,t,a)
+#  define PRA2(s,t,a) PSRAn(2,s,t,a)
+#  define PRA3(s,t,a) PSRAn(3,s,t,a)
+#  define PRA4(s,t,a) PSRAn(4,s,t,a)
+#  define PRA5(s,t,a) PSRAn(5,s,t,a)
+#  define PRA6(s,t,a) PSRAn(6,s,t,a)
+#  define PRA7(s,t,a) PSRAn(7,s,t,a)
+#  define PRA8(s,t,a) PSRAn(8,s,t,a)
+#  define PRA9(s,t,a) PSRAn(9,s,t,a)
+#  define PRA10(s,t,a) PSRAn(10,s,t,a)
+#  define PRA11(s,t,a) PSRAn(11,s,t,a)
+#  define PRA12(s,t,a) PSRAn(12,s,t,a)
 
 #else
 #  error Unknown platform

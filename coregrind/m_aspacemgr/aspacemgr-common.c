@@ -57,11 +57,15 @@ void ML_(am_exit)( Int status )
 #  if defined(VGO_linux)
    (void)VG_(do_syscall1)(__NR_exit_group, status);
 #  endif
+#  if !defined(VGO_gnu)
    (void)VG_(do_syscall1)(__NR_exit, status);
    /* Why are we still alive here? */
    /*NOTREACHED*/
    *(volatile Int *)0 = 'x';
    aspacem_assert(2+2 == 5);
+#  else
+   vg_assert(0);
+#  endif
 }
 
 void ML_(am_barf) ( const HChar* what )
@@ -95,9 +99,13 @@ void ML_(am_assert_fail)( const HChar* expr,
 
 Int ML_(am_getpid)( void )
 {
+#  if !defined(VGO_gnu)
    SysRes sres = VG_(do_syscall0)(__NR_getpid);
    aspacem_assert(!sr_isError(sres));
    return sr_Res(sres);
+#  else
+   vg_assert(0);
+#  endif
 }
 
 
@@ -175,6 +183,8 @@ SysRes VG_(am_do_mmap_NO_NOTIFY)( Addr start, SizeT length, UInt prot,
    }
    res = VG_(do_syscall6)(__NR_mmap, (UWord)start, length,
                           prot, flags, (UInt)fd, offset);
+#  elif defined(VGO_gnu)
+   vg_assert(0);
 #  else
 #    error Unknown platform
 #  endif
@@ -184,12 +194,20 @@ SysRes VG_(am_do_mmap_NO_NOTIFY)( Addr start, SizeT length, UInt prot,
 static
 SysRes local_do_mprotect_NO_NOTIFY(Addr start, SizeT length, UInt prot)
 {
+# if !defined(VGO_gnu)
    return VG_(do_syscall3)(__NR_mprotect, (UWord)start, length, prot );
+# else
+  vg_assert(0);
+# endif
 }
 
 SysRes ML_(am_do_munmap_NO_NOTIFY)(Addr start, SizeT length)
 {
+# if !defined(VGO_gnu)
    return VG_(do_syscall2)(__NR_munmap, (UWord)start, length );
+# else
+  vg_assert(0);
+# endif
 }
 
 #if HAVE_MREMAP
@@ -243,26 +261,42 @@ SysRes ML_(am_do_relocate_nooverlap_mapping_NO_NOTIFY)(
 
 SysRes ML_(am_open) ( const HChar* pathname, Int flags, Int mode )
 {  
+#  if !defined(VGO_gnu)
    SysRes res = VG_(do_syscall3)(__NR_open, (UWord)pathname, flags, mode);
    return res;
+#  else
+   vg_assert(0);
+#  endif
 }
 
 Int ML_(am_read) ( Int fd, void* buf, Int count)
 {
+#  if !defined(VGO_gnu)
    SysRes res = VG_(do_syscall3)(__NR_read, fd, (UWord)buf, count);
    return sr_isError(res) ? -1 : sr_Res(res);
+#  else
+   vg_assert(0);
+#  endif
 }
 
 void ML_(am_close) ( Int fd )
 {
+#  if !defined(VGO_gnu)
    (void)VG_(do_syscall1)(__NR_close, fd);
+#  else
+   vg_assert(0);
+#  endif
 }
 
 Int ML_(am_readlink)(HChar* path, HChar* buf, UInt bufsiz)
 {
+#  if !defined(VGO_gnu)
    SysRes res;
    res = VG_(do_syscall3)(__NR_readlink, (UWord)path, (UWord)buf, bufsiz);
    return sr_isError(res) ? -1 : sr_Res(res);
+#  else
+   vg_assert(0);
+#  endif
 }
 
 Int ML_(am_fcntl) ( Int fd, Int cmd, Addr arg )
@@ -271,6 +305,9 @@ Int ML_(am_fcntl) ( Int fd, Int cmd, Addr arg )
    SysRes res = VG_(do_syscall3)(__NR_fcntl, fd, cmd, arg);
 #  elif defined(VGO_darwin)
    SysRes res = VG_(do_syscall3)(__NR_fcntl_nocancel, fd, cmd, arg);
+#  elif defined(VGO_gnu)
+   SysRes res;
+   vg_assert(0);
 #  else
 #  error "Unknown OS"
 #  endif
@@ -298,6 +335,7 @@ Bool ML_(am_get_fd_d_i_m)( Int fd,
       return True;
    }
 #  endif
+#  if !defined(VGO_gnu)
    res = VG_(do_syscall2)(__NR_fstat, fd, (UWord)&buf);
    if (!sr_isError(res)) {
       *dev  = (ULong)buf.st_dev;
@@ -305,6 +343,7 @@ Bool ML_(am_get_fd_d_i_m)( Int fd,
       *mode = (UInt) buf.st_mode;
       return True;
    }
+#  endif
    return False;
 }
 
@@ -330,6 +369,9 @@ Bool ML_(am_resolve_filename) ( Int fd, /*OUT*/HChar* buf, Int nbuf )
       if (tmp[0] == '/') return True;
    }
    return False;
+
+#elif defined(VGO_gnu)
+   vg_assert(0);
 
 #  else
 #     error Unknown OS

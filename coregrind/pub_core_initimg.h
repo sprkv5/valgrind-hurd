@@ -117,6 +117,29 @@ struct _IIFinaliseImageInfo {
    Addr  initial_client_IP;
 };
 
+/* -------------------------- GNU -------------------------- */
+
+#elif defined(VGO_gnu)
+
+struct _IICreateImageInfo {
+   /* ------ Mandatory fields ------ */
+   const HChar*  toolname;
+   Addr    sp_at_startup;
+   Addr    clstack_top;
+   /* ------ Per-OS fields ------ */
+   HChar** argv;
+   HChar** envp;
+};
+
+struct _IIFinaliseImageInfo {
+   /* ------ Mandatory fields ------ */
+   SizeT clstack_max_size;
+   Addr  initial_client_SP;
+   /* ------ Per-OS fields ------ */
+   Addr  initial_client_IP;
+   Addr  initial_client_TOC;
+   UInt* client_auxv;
+};
 
 #else
 #  error "Unknown OS"

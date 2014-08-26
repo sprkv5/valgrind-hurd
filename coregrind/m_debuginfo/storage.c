@@ -1207,7 +1207,7 @@ Bool preferName ( struct _DebugInfo* di,
    vlena = VG_(strlen)(a_name);
    vlenb = VG_(strlen)(b_name);
 
-#  if defined(VGO_linux)
+#  if defined(VGO_linux) || defined(VGO_gnu) // as linux is also a gnu system
 #    define VERSION_CHAR '@'
 #  elif defined(VGO_darwin)
 #    define VERSION_CHAR '$'
